@@ -6,6 +6,9 @@
 
 #include <jdlib.h>
 
+extern jlist_node * _jlist_node_new(jany val);
+extern jlist_node * _jlist_node_free(jlist_node * node);
+
 jllist * jllist_new_empty() {
 	return jllist_new(0);
 }
@@ -61,7 +64,7 @@ jcode jllist_delete(jllist * l, int index) {
 	l->elems[index] = NULL;
 }
 
-jllist jllist_free(jllist * l) {
+jllist * jllist_free(jllist * l) {
 	free(l->elems);
 	free(l);
 	return NULL;
@@ -103,6 +106,7 @@ jcode jlist_insert(jlist * l, int index, jany elem) {
 	if (index == 0) {
 		l->node = new;
 		new->next = node;
+		goto END;
 	}
 
 	for (int i = 0; i < index - 1; i++) {
@@ -121,6 +125,27 @@ END:
 	return JOK;
 }
 
+jcode jlist_delete(jlist * l, int index) {
+	jlist_node * node = l->node;
+	if (node == NULL)
+		return JERR;
+
+	if (index == 0) {
+		l->node = _jlist_node_free(node);
+		return JOK;
+	}
+
+	for (int i = 0; i < index - 1; i++) {
+		if (node->next == NULL)
+			return JERR;
+		node = node->next;
+	}
+	jlist_node * next = node->next;
+	node->next = _jlist_node_free(next);
+
+	return JOK;
+}
+
 jany jlist_index(jlist * l, int index) {
 	jlist_node * node = l->node;
 	if (node == NULL) 
@@ -135,10 +160,27 @@ jany jlist_index(jlist * l, int index) {
 	return node->val;
 }
 
+jlist * jlist_free(jlist * l) {
+	jlist_node * node = l->node;
+	while (node) {
+		node = _jlist_node_free(node);
+	}
+	free(l);
+	return NULL;
+}
+
+
 jlist_node * _jlist_node_new(jany val) {
 	jlist_node * node = (jlist_node *)malloc(sizeof(jlist_node));
 	node->val = val;
 	return node;
+}
+
+jlist_node * _jlist_node_free(jlist_node * node) {
+	if (node == NULL) return NULL;
+	jlist_node * next = node->next;
+	free(node);
+	return next;
 }
 
 #endif // _JDLIB_LIST_C_

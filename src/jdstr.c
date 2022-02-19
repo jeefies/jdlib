@@ -1,10 +1,10 @@
 #ifndef _JDLIB_STR_
 #define _JDLIB_STR_
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include <jdlib.h>
 
@@ -18,10 +18,36 @@ jstr jstr_copy(jstr sth) {
 		return NULL;
 	int l = strlen(sth);
 
-	jstr r = (jstr)malloc(sizeof(char) * (l + 1));
-	r[l] = '\0';
-	strcpy(r, sth);
+	jstr r = jstr_new(l + 1);
+	memcpy(r, sth, l);
 	return r;
+}
+
+jstr jstr_new(int size) {
+	jstr r = (jstr)malloc(sizeof(char) * size);
+	r[size - 1] = '\0';
+	return r;
+}
+
+jstr jstr_trim(jstr str) {
+	jstr rstr;
+
+	// search for start
+	while (isspace(*str)) {
+		if (*str == '\0')
+			return "";
+		str++;
+	}
+
+	int rseek = strlen(str);
+	// search for end
+	while (isspace(str[rseek]))
+		rseek--;
+
+	rstr = jstr_new(rseek + 1);
+	memcpy(rstr, str, rseek);
+
+	return rstr;
 }
 
 jstrs * jstrs_new_empty() {
@@ -45,13 +71,14 @@ jstrs * jstrs_new_from(const jstrs * strs) {
 	return r;
 }
 
-jcode jstrs_free(jstrs * strs) {
+jstrs * jstrs_free(jstrs * strs) {
 	for (int i = 0; i < strs->len; i++) {
 		jstr str = strs->strs[i];
 		// Free not NULL ones
 		if (str != NULL) free(str);
 	}
 	free(strs);
+	return NULL;
 }
 
 

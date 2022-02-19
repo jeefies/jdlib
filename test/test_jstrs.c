@@ -2,8 +2,7 @@
 
 #include <jdlib.h>
 
-int main(int argc, const char *argv[])
-{
+void test_strs() {
 	// jstr is another name of "char *"
 	jstr str = "Here's a simple string";
 	// jstrs include a list of strs and a length number
@@ -53,6 +52,13 @@ int main(int argc, const char *argv[])
 	jstrs_free(str2_2);
 
 	printf("Test jstrs OK\n");
+}
 
+void test_str() {
+	// TODO: need completion!
+}
+
+int main(int argc, const char *argv[]) {
+	test_strs();
 	return 0;
 }

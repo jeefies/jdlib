@@ -15,7 +15,12 @@ typedef struct jstrs {
 
 // Return a copy create by malloc
 jstr jstr_copy(jstr sth);
+// Return a new jstr instance (last space is set to '\0')
+jstr jstr_new(int size);
 jstr jstr_free(jstr str);
+
+// str operations
+jstr jstr_trim(jstr str);
 
 // Create a jstrs instance
 jstrs * jstrs_new(int size);
@@ -23,7 +28,7 @@ jstrs * jstrs_new_empty();
 jstrs * jstrs_new_from(const jstrs * strs);
 
 // Cleanup
-jcode jstrs_free(jstrs * strs);
+jstrs * jstrs_free(jstrs * strs);
 
 // Read ops
 // Return NULL if index is out of range
@@ -54,11 +59,16 @@ typedef struct jllist {
 
 jllist * jllist_new(int size);
 jllist * jllist_new_empty();
+
+jllist * jllist_free(jllist * l);
+
+// Write Method
 jcode jllist_append(jllist * l, jany elem);
 jcode jllist_append_empty(jllist * l, jany elem);
 jcode jllist_set(jllist * l, int index, jany elem);
-jany jllist_index(jllist * l, int index);
 jcode jllist_delete(jllist * l, int index);
+// Read Method
+jany jllist_index(jllist * l, int index);
 
 
 // Linked List (Default List)
@@ -71,6 +81,16 @@ typedef struct jlist {
 	jlist_node * node;
 	int len;
 } jlist;
+
+jlist * jlist_new();
+jlist * jlist_free();
+// Write Method
+jcode jlist_append(jlist * l, jany elem);
+jcode jlist_delete(jlist * l, int index);
+jcode jlist_insert(jlist * l, int index, jany elem);
+// Read Method
+jany jlist_index(jlist * l, int index);
+
 
 // Double Linked List
 typedef struct jdlist_node {
