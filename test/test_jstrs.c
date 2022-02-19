@@ -10,12 +10,12 @@ int main(int argc, const char *argv[])
 	jstrs * str_l = jstrs_new_empty();
 
 	// it should be equal to jstrs_len(str_l);
-	printf("empty length %d\n", str_l->length);
+	printf("empty length %d\n", str_l->len);
 
 	// This operations would copy the string and you can free origin anytime you want.
 	jstrs_append(str_l, str);
 
-	printf("one added length %d\n", str_l->length);
+	printf("one added length %d\n", str_l->len);
 
 	// Second argument is the `sep` between each str
 	jstrs_print(str_l, "\n");
