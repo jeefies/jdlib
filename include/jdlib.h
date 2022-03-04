@@ -4,10 +4,11 @@
 #define JOK 0
 #define JERR 1
 typedef char jcode;
+typedef char jchar;
 
 #ifndef _LDLIB_STRS_
 #define _LDLIB_STRS_
-typedef char* jstr;
+typedef jchar* jstr;
 typedef struct jstrs {
 	jstr * strs;
 	int len;
@@ -21,6 +22,8 @@ jstr jstr_free(jstr str);
 
 // str operations
 jstr jstr_trim(jstr str);
+jstrs * jstr_sep(jstr str, const jchar chr);
+jstrs * jstr_split(jstr str, const jstr sep);
 
 // Create a jstrs instance
 jstrs * jstrs_new(int size);

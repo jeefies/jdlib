@@ -1,6 +1,8 @@
 #include <stdio.h>
+#include <assert.h>
 
 #include <jdlib.h>
+
 
 void test_linear_list() {
 	// Test Linear List
@@ -16,6 +18,7 @@ void test_linear_list() {
 	// Test String ADD
 	jllist_append_empty(list, "Hello World");
 	printf("List[1] %s\n", (char *)jllist_index(list, 1));
+	assert(list->len == 8);
 
 	// Test NULL 
 	printf("Empty Elem: %s\n", jllist_index(list, -2));
@@ -28,22 +31,30 @@ void test_linear_list() {
 void test_linked_list() {
 	// Test linked list
 	jlist * li = jlist_new();
+	assert(li->len == 0);
 	// Test Append Method
 	// Append string
 	jlist_append(li, "Static string");
+	assert(li->len == 1);
 	// Append int
 	jlist_append(li, (jany)5);
+	assert(li->len == 2);
 	// Test insert method
 	jlist_insert(li, 1, "Mid Insert");
+	assert(li->len == 3);
 	jlist_insert(li, 20, (jany)10);
+	assert(li->len == 4);
 	// ["Static string", "Mid Insert", 5, 10]
 	// and Test index
 	printf("insert 1 to :%s\n", jlist_index(li, 1)); // Mid Insert
 	// Test delete
 	jlist_delete(li, 0);
+	assert(li->len == 3);
+
 	printf("delete 0 and li[0]: %s\n", jlist_index(li, 0));
 	// Test insert 0
 	jlist_insert(li, 0, "SHOULD BE FRIST");
+	assert(li->len == 4);
 	printf("insert 0 and li[0]: %s\n", jlist_index(li, 0));
 	// Test free
 	jlist_free(li);

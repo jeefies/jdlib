@@ -7,7 +7,9 @@
 #include <jdlib.h>
 
 extern jlist_node * _jlist_node_new(jany val);
+extern jdlist_node * _jdlist_node_new(jany val);
 extern jlist_node * _jlist_node_free(jlist_node * node);
+extern jdlist_node * _jdlist_node_free(jlist_node * node);
 
 jllist * jllist_new_empty() {
 	return jllist_new(0);
@@ -33,6 +35,7 @@ jcode jllist_append_empty(jllist * l, jany elem) {
 	for (int i = 0; i < l->cap; i++) {
 		if (l->elems[i] == NULL) {
 			l->elems[i] = elem;
+			l->len++;
 			return JOK;
 		}
 	}
@@ -50,6 +53,7 @@ jcode jllist_append(jllist * l, jany elem) {
 jcode jllist_set(jllist * l, int index, jany elem) {
 	INDEX(l,JERR)
 
+	if (l->elems[index] != NULL) l->len++;
 	l->elems[index] = elem;
 	return JOK;
 }
@@ -62,6 +66,7 @@ jany jllist_index(jllist * l, int index) {
 jcode jllist_delete(jllist * l, int index) {
 	INDEX(l,JERR)
 	l->elems[index] = NULL;
+	l->len--;
 }
 
 jllist * jllist_free(jllist * l) {
@@ -82,6 +87,7 @@ jcode jlist_append(jlist * l, jany elem) {
 
 	if (node == NULL) {
 		l->node = new;
+		l->len = 1;
 		return JOK;
 	}
 
@@ -132,7 +138,7 @@ jcode jlist_delete(jlist * l, int index) {
 
 	if (index == 0) {
 		l->node = _jlist_node_free(node);
-		return JOK;
+		goto __END;
 	}
 
 	for (int i = 0; i < index - 1; i++) {
@@ -143,6 +149,8 @@ jcode jlist_delete(jlist * l, int index) {
 	jlist_node * next = node->next;
 	node->next = _jlist_node_free(next);
 
+__END:
+	l->len--;
 	return JOK;
 }
 
@@ -169,6 +177,18 @@ jlist * jlist_free(jlist * l) {
 	return NULL;
 }
 
+jdlist * jdlist_new() {
+	jdlist * l = (jdlist *)malloc(sizeof(jdlist));
+	l->len = 0;
+	return l;
+}
+
+jdlist * jdlist_append(jdlist * l, jany val) {
+	jdlist_node * new = _jlist_node_new(val);
+	jdlist_node * node = l->node;
+	jdlist_node * back = node->prev;
+}
+
 
 jlist_node * _jlist_node_new(jany val) {
 	jlist_node * node = (jlist_node *)malloc(sizeof(jlist_node));
@@ -179,6 +199,19 @@ jlist_node * _jlist_node_new(jany val) {
 jlist_node * _jlist_node_free(jlist_node * node) {
 	if (node == NULL) return NULL;
 	jlist_node * next = node->next;
+	free(node);
+	return next;
+}
+
+jdlist_node * _jdlist_node_new(jany val) {
+	jdlist_node * node = (jdlist_node *)malloc(sizeof(jdlist_node));
+	node->val = val;
+	return node;
+}
+
+jdlist_node * _jdlist_node_free(jdlist_node * node) {
+	if (node == NULL) return NULL;
+	jdlist_node * next = node->next;
 	free(node);
 	return next;
 }
