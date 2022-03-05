@@ -148,3 +148,11 @@ ipch/
 
 # test files
 jd*
+
+# CMake files
+*.cmake
+CMakeCache.txt
+Makefile
+
+CMakeFiles
+Testing

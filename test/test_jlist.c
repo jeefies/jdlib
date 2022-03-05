@@ -60,10 +60,30 @@ void test_linked_list() {
 	jlist_free(li);
 }
 
+jany pr(jany s, int index) {
+	printf("%d: %s\n", index, (char*)s);
+	return NULL;
+}
+
+void test_double_linked_list() {
+	jdlist * li = jdlist_new();
+	jdlist_append(li, "2");
+	jdlist_append_front(li, "Front Append");
+	jdlist_append(li, "Last Append");
+	assert(li->len == 3);
+
+	jdlist_foreach(li, pr);
+	jdlist_remove(li, 1);
+	assert(li->len == 2);
+	jdlist_foreach_reverse(li, pr);
+}
+
 int main() {
 	test_linear_list();
 	printf("- - - - - - - - - - - - -\n");
 	test_linked_list();
+	printf("- - - - - - - - - - - - -\n");
+	test_double_linked_list();
 
 	return 0;
 }

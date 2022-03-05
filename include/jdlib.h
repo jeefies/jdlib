@@ -4,15 +4,19 @@
 #define JOK 0
 #define JERR 1
 typedef char jcode;
-typedef char jchar;
 
 #ifndef _LDLIB_STRS_
 #define _LDLIB_STRS_
+typedef char jchar;
 typedef jchar* jstr;
 typedef struct jstrs {
 	jstr * strs;
 	int len;
 } jstrs;
+
+#define S_CHAR sizeof(jchar)
+#define S_STR sizeof(jstr)
+#define S_STRS sizeof(jstrs)
 
 // Return a copy create by malloc
 jstr jstr_copy(jstr sth);
@@ -53,12 +57,14 @@ jcode jstrs_set(jstrs * strs, int index, const jstr src);
 #define _LDLIB_LIST_
 
 typedef void* jany;
+#define S_ANY sizeof(jany)
 // Linear List
 typedef struct jllist { 
 	jany * elems;
 	int len;
 	int cap; // capacity
 } jllist;
+#define S_LL sizeof(jllist)
 
 jllist * jllist_new(int size);
 jllist * jllist_new_empty();
@@ -79,11 +85,13 @@ typedef struct jlist_node {
 	jany val;
 	struct jlist_node * next;
 } jlist_node;
+#define S_LN sizeof(jlist_node)
 
 typedef struct jlist {
 	jlist_node * node;
 	int len;
 } jlist;
+#define S_L sizeof(jlist)
 
 jlist * jlist_new();
 jlist * jlist_free();
@@ -101,16 +109,37 @@ typedef struct jdlist_node {
 	struct jdlist_node * prev;
 	struct jdlist_node * next;
 } jdlist_node;
+#define S_DLN sizeof(jdlist_node)
 
 typedef struct jdlist {
-	jdlist_node * node;
+	jdlist_node * start;
+	jdlist_node * end;
 	int len;
 } jdlist;
+#define S_DL sizeof(jdlist)
+jdlist * jdlist_new();
+jcode jdlist_append(jdlist * l, jany val);
+jcode jdlist_append_front(jdlist * l, jany val);
+jcode jdlist_remove(jdlist * l, int index);
+jcode jdlist_foreach(jdlist * l, jany(*)(jany, int));
+jcode jdlist_foreach_reverse(jdlist * l, jany(*)(jany,int));
 
-#endif // _LDLIB_LIST_
-
+// For check the index if it's out of range
 #define INDEX(x,r) if(index >= x->len)\
 		return r;\
 	if (index < 0 && ((index += x->len) < 0))\
-		return r;
+		return r
+
+#endif // _LDLIB_LIST_
+
+// Generic Definations
+#define ABS(x) x<0?-x:x
+#define MAX(x,y) x<y?y:x
+#define MIN(x,y) x<y?x:y
+#define isnull(x) x==NULL
+#define rnull(x) if(x==NULL)return NULL
+jany jfree(jany p);
+jany jmalloc(int size);
+jany jrealloc(jany p, int size);
+
 #endif // _JDLIB_C_H_

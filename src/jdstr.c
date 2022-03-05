@@ -95,7 +95,7 @@ jcode jstrs_print(const jstrs * strs, const jstr sep) {
 }
 
 jstr jstrs_index(const jstrs * strs, int index) {
-	INDEX(strs,NULL)
+	INDEX(strs,NULL);
 	return strs->strs[index];
 }
 
@@ -116,14 +116,14 @@ jcode jstrs_append(jstrs * strs, const jstr src) {
 }
 
 jcode jstrs_set(jstrs * strs, int index, const jstr src) {
-	INDEX(strs,JERR)
+	INDEX(strs,JERR);
 
 	jstrs_delete(strs, index);
 	strs->strs[index] = jstr_copy(src);
 }
 
 jcode jstrs_delete(jstrs * strs, int index) {
-	INDEX(strs,JERR)
+	INDEX(strs,JERR);
 
 	strs->strs[index] = jstr_free(strs->strs[index]);
 }

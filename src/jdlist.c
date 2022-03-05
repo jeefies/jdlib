@@ -9,17 +9,17 @@
 extern jlist_node * _jlist_node_new(jany val);
 extern jdlist_node * _jdlist_node_new(jany val);
 extern jlist_node * _jlist_node_free(jlist_node * node);
-extern jdlist_node * _jdlist_node_free(jlist_node * node);
+extern jdlist_node * _jdlist_node_free(jdlist_node * node);
 
 jllist * jllist_new_empty() {
 	return jllist_new(0);
 }
 
 jllist * jllist_new(int cap_size) {
-	jllist * l = (jllist *)malloc(sizeof(jllist));
+	jllist * l = (jllist *)jmalloc(S_LL);
 
-	int memsize = sizeof(jany) * cap_size;
-	l->elems = (jany *)malloc(memsize);
+	int memsize = S_ANY * cap_size;
+	l->elems = (jany *)jmalloc(memsize);
 	l->len = 0;
 	l->cap = cap_size;
 
@@ -33,7 +33,7 @@ jllist * jllist_new(int cap_size) {
 // Append the element to first empty node
 jcode jllist_append_empty(jllist * l, jany elem) {
 	for (int i = 0; i < l->cap; i++) {
-		if (l->elems[i] == NULL) {
+		if (isnull(l->elems[i])) {
 			l->elems[i] = elem;
 			l->len++;
 			return JOK;
@@ -45,13 +45,13 @@ jcode jllist_append_empty(jllist * l, jany elem) {
 
 // Append the element at end of the List (alloc a new place)
 jcode jllist_append(jllist * l, jany elem) {
-	l->elems = (jany *)realloc(l->elems, sizeof(jany) * (++l->cap));
+	l->elems = (jany *)jrealloc(l->elems, S_ANY * (++l->cap));
 	l->len = l->cap;
 	return JOK;
 }
 
 jcode jllist_set(jllist * l, int index, jany elem) {
-	INDEX(l,JERR)
+	INDEX(l,JERR);
 
 	if (l->elems[index] != NULL) l->len++;
 	l->elems[index] = elem;
@@ -59,12 +59,12 @@ jcode jllist_set(jllist * l, int index, jany elem) {
 }
 
 jany jllist_index(jllist * l, int index) {
-	INDEX(l,NULL)
+	INDEX(l,NULL);
 	return l->elems[index];
 }
 
 jcode jllist_delete(jllist * l, int index) {
-	INDEX(l,JERR)
+	INDEX(l,JERR);
 	l->elems[index] = NULL;
 	l->len--;
 }
@@ -76,8 +76,10 @@ jllist * jllist_free(jllist * l) {
 }
 
 jlist * jlist_new() {
-	jlist * l = (jlist *)malloc(sizeof(jlist));
+	jlist * l = (jlist *)jmalloc(S_L);
 	l->len = 0;
+	// Why it is must needed?
+	l->node = NULL;
 	return l;
 }
 
@@ -177,42 +179,125 @@ jlist * jlist_free(jlist * l) {
 	return NULL;
 }
 
+#define JDLIST_PRECHECK if (start == NULL) {\
+		l->len = 1;\
+		l->start = new;\
+		l->end = new;\
+		new->prev = NULL;\
+		new->next = NULL;\
+		return JOK;\
+	}
+
+
 jdlist * jdlist_new() {
-	jdlist * l = (jdlist *)malloc(sizeof(jdlist));
+	jdlist * l = (jdlist *)jmalloc(S_DL);
 	l->len = 0;
+	//  Why it must set to NULL?
+	l->start = NULL;
+	l->end = NULL;
 	return l;
 }
 
-jdlist * jdlist_append(jdlist * l, jany val) {
-	jdlist_node * new = _jlist_node_new(val);
-	jdlist_node * node = l->node;
-	jdlist_node * back = node->prev;
+jcode jdlist_append(jdlist * l, jany val) {
+	jdlist_node * new = _jdlist_node_new(val);
+	jdlist_node * start = l->start;
+
+	// DEFINE
+	JDLIST_PRECHECK;
+
+	jdlist_node * end = l->end;
+	end->next = new;
+	new->prev = end;
+	l->end = new;
+
+	l->len++;
+	return JOK;
 }
 
+jcode jdlist_append_front(jdlist * l, jany val) {
+	jdlist_node * new = _jdlist_node_new(val);
+	jdlist_node * start = l->start;
+
+	// DEFINE
+	JDLIST_PRECHECK;
+
+	start->prev = new;
+	new->next = start;
+	l->start = new;
+
+	l->len++;
+
+	return JOK;
+}
+
+jcode jdlist_remove(jdlist * l, int index) {
+	jdlist_node * start = l->start;
+	INDEX(l,JERR);
+
+	if (index == 0) {
+		l->start = _jdlist_node_free(start);
+		l->start->prev = NULL;
+		goto END;
+	}
+
+	for (int i = 0; i < index - 1; i++) {
+		start = start->next;
+	}
+
+	start->next = _jdlist_node_free(start->next);
+	start->next->prev = start;
+
+END:
+	l->len--;
+	return JOK;
+}
+
+jcode jdlist_foreach(jdlist * l, jany(*operation)(jany,int)) {
+	jdlist_node * start = l->start;
+	for (int i = 0;;i++) {
+		if (isnull(start)) return JOK;
+		operation(start->val,i);
+		start=start->next;
+	}
+	return JERR;
+}
+
+jcode jdlist_foreach_reverse(jdlist * l, jany(*operation)(jany,int)) {
+	jdlist_node * end = l->end;
+	for (int i = l->len-1;;i--) {
+		if (isnull(end)) return JOK;
+		operation(end->val,i);
+		end = end->prev;
+	}
+	return JERR;
+}
 
 jlist_node * _jlist_node_new(jany val) {
-	jlist_node * node = (jlist_node *)malloc(sizeof(jlist_node));
+	jlist_node * node = (jlist_node *)jmalloc(S_LN);
 	node->val = val;
+	node->next = NULL;
 	return node;
 }
 
 jlist_node * _jlist_node_free(jlist_node * node) {
-	if (node == NULL) return NULL;
+	rnull(node);
 	jlist_node * next = node->next;
 	free(node);
 	return next;
 }
 
 jdlist_node * _jdlist_node_new(jany val) {
-	jdlist_node * node = (jdlist_node *)malloc(sizeof(jdlist_node));
+	jdlist_node * node = (jdlist_node *)jmalloc(S_DLN);
 	node->val = val;
+	node->next = NULL;
+	node->prev = NULL;
 	return node;
 }
 
 jdlist_node * _jdlist_node_free(jdlist_node * node) {
-	if (node == NULL) return NULL;
+	rnull(node);
 	jdlist_node * next = node->next;
-	free(node);
+	jfree(node);
 	return next;
 }
 
