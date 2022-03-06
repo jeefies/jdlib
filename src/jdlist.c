@@ -239,6 +239,9 @@ jcode jdlist_remove(jdlist * l, int index) {
 		l->start->prev = NULL;
 		goto END;
 	}
+	
+	if (index < 0 && (index+=l->len) < 0)
+		return JERR;
 
 	for (int i = 0; i < index - 1; i++) {
 		start = start->next;
@@ -270,6 +273,64 @@ jcode jdlist_foreach_reverse(jdlist * l, jany(*operation)(jany,int)) {
 		end = end->prev;
 	}
 	return JERR;
+}
+
+jcode jdlist_insert(jdlist * l, int index, jany val) {
+	if (index == 0)
+		return jdlist_append_front(l, val);
+	else if (index >= l->len) 
+		return jdlist_append(l, val);
+	else if (index < 0 && (index+=l->len) < 0)
+		return JERR;
+
+	jdlist_node * new = _jdlist_node_new(val);
+	jdlist_node * start = l->start;
+
+	for (int i = 0; i < index - 1; i++)
+		start = start->next;
+
+	new->next = start->next;
+	start->next = new;
+	new->prev = start;
+
+	l->len++;
+	return JOK;
+}
+
+jany jdlist_index(jdlist * l, int index) {
+	jdlist_node * start = l->start;
+
+	if (index > l->len)
+		return NULL;
+	else if (index < 0 && (index+=l->len) < 0)
+		return NULL;
+
+	for (int i = 0; i < index - 1; i++) 
+		start = start->next;
+
+	return start->val;
+}
+
+jcode jdlist_reverse(jdlist * l) {
+	jdlist_node * node = l->start;
+
+	jdlist_node * start = l->start;
+	jdlist_node * end = l->end;
+
+	rerr(start);
+
+	// FIXME: could not real reverse the double linked lis
+	jdlist_node * tmp;
+	for (int i = 0; i < l->len; i++) {
+		tmp = node->next;
+		node->next = node->prev;
+		node->prev = tmp;
+		node = tmp;
+	}
+
+	l->end = start;
+	l->start = end;
+	return JOK;
 }
 
 jlist_node * _jlist_node_new(jany val) {

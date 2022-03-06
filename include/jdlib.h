@@ -14,12 +14,13 @@ typedef struct jstrs {
 	int len;
 } jstrs;
 
-#define S_CHAR sizeof(jchar)
+#define S_CH sizeof(jchar)
 #define S_STR sizeof(jstr)
 #define S_STRS sizeof(jstrs)
 
 // Return a copy create by malloc
 jstr jstr_copy(jstr sth);
+jstr jstr_from(jstr sth);
 // Return a new jstr instance (last space is set to '\0')
 jstr jstr_new(int size);
 jstr jstr_free(jstr str);
@@ -120,7 +121,11 @@ typedef struct jdlist {
 jdlist * jdlist_new();
 jcode jdlist_append(jdlist * l, jany val);
 jcode jdlist_append_front(jdlist * l, jany val);
+jcode jdlist_insert(jdlist * l, int index, jany val);
 jcode jdlist_remove(jdlist * l, int index);
+jcode jdlist_reverse(jdlist * l);
+
+jany jdlist_index(jdlist * l, int index);
 jcode jdlist_foreach(jdlist * l, jany(*)(jany, int));
 jcode jdlist_foreach_reverse(jdlist * l, jany(*)(jany,int));
 
@@ -137,7 +142,9 @@ jcode jdlist_foreach_reverse(jdlist * l, jany(*)(jany,int));
 #define MAX(x,y) x<y?y:x
 #define MIN(x,y) x<y?x:y
 #define isnull(x) x==NULL
-#define rnull(x) if(x==NULL)return NULL
+#define rnull(x) if (x == NULL) return NULL
+#define rerr(x) if (x == NULL) return JERR
+
 jany jfree(jany p);
 jany jmalloc(int size);
 jany jrealloc(jany p, int size);

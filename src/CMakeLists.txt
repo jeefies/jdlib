@@ -12,4 +12,5 @@ set (SRC
 
 set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 
-add_library(jd SHARED ${SRC})
+add_library (jd SHARED ${SRC})
+set_target_properties (jd PROPERTIES PUBLIC_HEADER ${PROJECT_SOURCE_DIR}/include/jdlib.h)

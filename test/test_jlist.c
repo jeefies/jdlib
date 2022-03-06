@@ -73,9 +73,21 @@ void test_double_linked_list() {
 	assert(li->len == 3);
 
 	jdlist_foreach(li, pr);
+	printf("- - -\n");
 	jdlist_remove(li, 1);
 	assert(li->len == 2);
 	jdlist_foreach_reverse(li, pr);
+	printf("- - -\n");
+
+	jdlist_insert(li, 1, "Middle insertion");
+	jdlist_foreach(li, pr);
+	assert(li->len == 3);
+	printf("- - -\n");
+
+	jdlist_reverse(li);
+	printf("Reversed:\n");
+	jdlist_foreach(li, pr);
+	printf("- - -\n");
 }
 
 int main() {
@@ -84,6 +96,8 @@ int main() {
 	test_linked_list();
 	printf("- - - - - - - - - - - - -\n");
 	test_double_linked_list();
+
+	printf("jllist, jlist, jdlist test ok!\n");
 
 	return 0;
 }

@@ -23,8 +23,12 @@ jstr jstr_copy(jstr sth) {
 	return r;
 }
 
+jstr jstr_from(jstr sth) {
+	return jstr_copy(sth);
+}
+
 jstr jstr_new(int size) {
-	jstr r = (jstr)malloc(sizeof(char) * size);
+	jstr r = (jstr)jmalloc(S_CH * size);
 	r[size - 1] = '\0';
 	return r;
 }
@@ -41,8 +45,10 @@ jstr jstr_trim(jstr str) {
 
 	int rseek = strlen(str);
 	// search for end
-	while (isspace(str[rseek]))
+	// rseek -1 for ignore the last and make sure the length ok
+	while (isspace(str[rseek - 1]))
 		rseek--;
+
 
 	rstr = jstr_new(rseek + 1);
 	memcpy(rstr, str, rseek);
@@ -55,9 +61,9 @@ jstrs * jstrs_new_empty() {
 }
 
 jstrs * jstrs_new(int size) {
-	jstrs * strs = (jstrs *)malloc(sizeof(jstrs));
+	jstrs * strs = (jstrs *)malloc(S_STR);
 
-	strs->strs = (jstr *)malloc(sizeof(jstr) * size);
+	strs->strs = (jstr *)malloc(S_STR * size);
 	strs->len = size;
 
 	return strs;

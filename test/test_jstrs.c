@@ -50,15 +50,25 @@ void test_strs() {
 	jstrs_free(str_l);
 	jstrs_free(strs2);
 	jstrs_free(str2_2);
-
-	printf("Test jstrs OK\n");
 }
 
 void test_str() {
-	// TODO: need completion!
+	// jstr str = jstr_copy("\tJ str here    ");
+	jstr str = jstr_from("\tJ str here    ");
+
+	printf("old str: \"%s\"\n", str);
+
+	jstr trimed = jstr_trim(str);
+	printf("trimed: \"%s\"\n", trimed);
+
+	jstr_free(str);
+	jstr_free(trimed);
 }
 
 int main(int argc, const char *argv[]) {
 	test_strs();
+	printf("- - - - - - - - - - - \n");
+	test_str();
+	printf("jstrs jstr test ok!\n");
 	return 0;
 }
