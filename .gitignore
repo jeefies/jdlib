@@ -146,9 +146,6 @@ ipch/
 # Visual Studio Trace Files
 *.e2e
 
-# test files
-jd*
-
 # CMake files
 *.cmake
 CMakeCache.txt
