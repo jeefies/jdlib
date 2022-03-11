@@ -290,6 +290,7 @@ jcode jdlist_insert(jdlist * l, int index, jany val) {
 		start = start->next;
 
 	new->next = start->next;
+	new->next->prev = new;
 	start->next = new;
 	new->prev = start;
 
@@ -319,7 +320,9 @@ jcode jdlist_reverse(jdlist * l) {
 
 	rerr(start);
 
-	// FIXME: could not real reverse the double linked lis
+	// FIXED: could not real reverse the double linked list
+	// It's caused by insertion operations.
+	// I missed changing ->next->prev to inserted one.
 	jdlist_node * tmp;
 	for (int i = 0; i < l->len; i++) {
 		tmp = node->next;
@@ -327,6 +330,7 @@ jcode jdlist_reverse(jdlist * l) {
 		node->prev = tmp;
 		node = tmp;
 	}
+	// At last, tmp also node is NULL
 
 	l->end = start;
 	l->start = end;

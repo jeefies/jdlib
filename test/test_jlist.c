@@ -46,7 +46,7 @@ void test_linked_list() {
 	assert(li->len == 4);
 	// ["Static string", "Mid Insert", 5, 10]
 	// and Test index
-	printf("insert 1 to :%s\n", jlist_index(li, 1)); // Mid Insert
+	printf("insert 1 to: %s\n", jlist_index(li, 1)); // Mid Insert
 	// Test delete
 	jlist_delete(li, 0);
 	assert(li->len == 3);

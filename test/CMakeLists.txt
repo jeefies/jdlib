@@ -2,6 +2,8 @@ include_directories(
 	${PROJECT_SOURCE_DIR}/include
 	)
 
+set (CMAKE_C_FLAGS ${CFLAGS})
+
 add_executable (jdlist test_jlist.c)
 add_executable (jdstr test_jstrs.c)
 add_executable (jdlib test.c)

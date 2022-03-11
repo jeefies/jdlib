@@ -3,6 +3,7 @@ include_directories(
 )
 
 set (SRCD  ${PROJECT_SOURCE_DIR}/src)
+set (CMAKE_C_FLAGS ${CFLAGS})
 
 set (SRC
 	${SRCD}/jdlib.c
