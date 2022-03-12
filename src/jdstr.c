@@ -9,13 +9,12 @@
 #include <jdlib.h>
 
 jstr jstr_free(jstr str) {
-	free(str);
+	jfree(str);
 	return NULL;
 }
 
 jstr jstr_copy(jstr sth) {
-	if (sth == NULL)
-		return NULL;
+	rnull(sth);
 	int l = strlen(sth);
 
 	jstr r = jstr_new(l + 1);
@@ -33,25 +32,29 @@ jstr jstr_new(int size) {
 	return r;
 }
 
+jstr jstr_ltrim(jstr str) {
+	// Trim left white space
+	while (isspace(*str)) {
+		if (*str == '\0') return "";
+		str++;
+	}
+	return jstr_copy(str);
+}
+
 jstr jstr_trim(jstr str) {
 	jstr rstr;
 
-	// search for start
-	while (isspace(*str)) {
-		if (*str == '\0')
-			return "";
-		str++;
-	}
-
+	str = jstr_ltrim(str);
 	int rseek = strlen(str);
 	// search for end
 	// rseek -1 for ignore the last and make sure the length ok
 	while (isspace(str[rseek - 1]))
 		rseek--;
 
-
+	// With last '\0'
 	rstr = jstr_new(rseek + 1);
 	memcpy(rstr, str, rseek);
+	str_free(str);
 
 	return rstr;
 }
@@ -78,10 +81,11 @@ jstrs * jstrs_new_from(const jstrs * strs) {
 }
 
 jstrs * jstrs_free(jstrs * strs) {
+	rnull(strs);
 	for (int i = 0; i < strs->len; i++) {
 		jstr str = strs->strs[i];
 		// Free not NULL ones
-		if (str != NULL) free(str);
+		jfree(str);
 	}
 	free(strs);
 	return NULL;

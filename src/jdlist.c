@@ -198,6 +198,13 @@ jdlist * jdlist_new() {
 	return l;
 }
 
+jdlist * jdlist_free(jdlist * l) {
+	jdlist_node * node = l->start;
+	while (node != NULL)
+		node = _jdlist_node_free(node);
+	return NULL;
+}
+
 jcode jdlist_append(jdlist * l, jany val) {
 	jdlist_node * new = _jdlist_node_new(val);
 	jdlist_node * start = l->start;
@@ -259,7 +266,8 @@ jcode jdlist_foreach(jdlist * l, jany(*operation)(jany,int)) {
 	jdlist_node * start = l->start;
 	for (int i = 0;;i++) {
 		if (isnull(start)) return JOK;
-		operation(start->val,i);
+		jany val = operation(start->val,i);
+		if (val != NULL) start->val = val;
 		start=start->next;
 	}
 	return JERR;
@@ -269,7 +277,8 @@ jcode jdlist_foreach_reverse(jdlist * l, jany(*operation)(jany,int)) {
 	jdlist_node * end = l->end;
 	for (int i = l->len-1;;i--) {
 		if (isnull(end)) return JOK;
-		operation(end->val,i);
+		jany val = operation(end->val,i);
+		if (val != NULL) end->val = val;
 		end = end->prev;
 	}
 	return JERR;
@@ -298,6 +307,23 @@ jcode jdlist_insert(jdlist * l, int index, jany val) {
 	return JOK;
 }
 
+jcode jdlist_set(jdlist * l, int index, jany val) {
+	if (index == 0) {
+		l->start->val = val;
+		return JOK;
+	} else if (index >= l->len) 
+		return JERR;
+	else if (index < 0 && (index+=l->len) < 0)
+		return JERR;
+
+	jdlist_node * node = l->start;
+	for (int i = 0; i < index; i++)
+		node = node->next;
+
+	node->val = val;
+	return JOK;
+}
+
 jany jdlist_index(jdlist * l, int index) {
 	jdlist_node * start = l->start;
 
@@ -310,6 +336,50 @@ jany jdlist_index(jdlist * l, int index) {
 		start = start->next;
 
 	return start->val;
+}
+
+int _jdlist_find(jdlist * l, jany val, int from, int end) {
+	jdlist_node * node = l->start;
+	for (int i = 0; i < l->len; i++) {
+		if (i < from) {
+			node = node->next;
+			continue;
+		};
+		if (i >= end) break;
+		if (node->val == val) return i;
+		node = node->next;
+	}
+	return -1;
+}
+
+int _jdlist_rfind(jdlist * l, jany val, int from, int end) {
+	jdlist_node * node = l->end;
+	for (int i = l->len - 1; i >= 0; i--) {
+		if (i >= end) {
+			node = node->prev;
+			continue;
+		}
+		if (i < from) break;
+		if (node->val == val) return i;
+		node = node->prev;
+	}
+	return -1;
+}
+
+int jdlist_find(jdlist * l, jany val) {
+	return _jdlist_find(l, val, 0, l->len);
+}
+
+int jdlist_rfind(jdlist * l, jany val) {
+	return _jdlist_rfind(l, val, 0, l->len);
+}
+
+int jdlist_find_from(jdlist * l, jany val, int from) {
+	return _jdlist_find(l, val, from, l->len);
+}
+
+int jdlist_rfind_from(jdlist * l, jany val, int from) {
+	return _jdlist_rfind(l, val, 0, from);
 }
 
 jcode jdlist_reverse(jdlist * l) {

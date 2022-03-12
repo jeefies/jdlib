@@ -85,9 +85,30 @@ void test_double_linked_list() {
 	printf("- - -\n");
 
 	jdlist_reverse(li);
-	printf("Reversed:\n");
+	printf("Reversed and set 1 to MDI:\n");
+	jdlist_set(li, 1, "MDI");
 	jdlist_foreach(li, pr);
 	printf("- - -\n");
+
+	jdlist_free(li);
+
+	// Again, test find
+	li = jdlist_new();
+	jdlist_append(li, "One");
+	jdlist_append(li, "Two");
+	jdlist_append(li, "Three");
+	jdlist_append(li, "Four");
+	jdlist_append(li, "Two");
+	jdlist_append(li, "One");
+
+	int i;
+	printf("%d\n", (i = jdlist_find(li, "One")));
+	assert(i == 0);
+	printf("%d\n", (i = jdlist_find_from(li, "One", 1)));
+	assert(i == 5);
+	printf("%d\n", (i = jdlist_rfind(li, "Two")));
+	assert(i == 4);
+	printf("%d\n", i = jdlist_rfind_from(li, "Two", 4));
 }
 
 int main() {

@@ -119,13 +119,20 @@ typedef struct jdlist {
 } jdlist;
 #define S_DL sizeof(jdlist)
 jdlist * jdlist_new();
+jdlist * jdlist_free(jdlist * l);
+
 jcode jdlist_append(jdlist * l, jany val);
 jcode jdlist_append_front(jdlist * l, jany val);
 jcode jdlist_insert(jdlist * l, int index, jany val);
 jcode jdlist_remove(jdlist * l, int index);
+jcode jdlist_set(jdlist * l, int index, jany val);
 jcode jdlist_reverse(jdlist * l);
 
 jany jdlist_index(jdlist * l, int index);
+int jdlist_find(jdlist * l, jany val);
+int jdlist_rfind(jdlist * l, jany val);
+int jdlist_find_from(jdlist * l, jany val, int from);
+int jdlist_rfind_from(jdlist * l, jany val, int from);
 jcode jdlist_foreach(jdlist * l, jany(*)(jany, int));
 jcode jdlist_foreach_reverse(jdlist * l, jany(*)(jany,int));
 
