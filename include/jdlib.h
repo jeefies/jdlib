@@ -3,10 +3,13 @@
 
 #define JOK 0
 #define JERR 1
+#define JFALSE 0
+#define JTRUE 1
+typedef char jbool;
 typedef char jcode;
 
-#ifndef _LDLIB_STRS_
-#define _LDLIB_STRS_
+#ifndef _JDLIB_STRS_
+#define _JDLIB_STRS_
 typedef char jchar;
 typedef jchar* jstr;
 typedef struct jstrs {
@@ -52,10 +55,10 @@ jcode jstrs_append(jstrs * strs, const jstr src);
 jcode jstrs_delete(jstrs * strs, int index);
 // It works like jstrs_delete if src is NULL
 jcode jstrs_set(jstrs * strs, int index, const jstr src);
-#endif // _LDLIB_STRS_
+#endif // _JDLIB_STRS_
 
-#ifndef _LDLIB_LIST_
-#define _LDLIB_LIST_
+#ifndef _JDLIB_LIST_
+#define _JDLIB_LIST_
 
 typedef void* jany;
 #define S_ANY sizeof(jany)
@@ -141,8 +144,39 @@ jcode jdlist_foreach_reverse(jdlist * l, jany(*)(jany,int));
 		return r;\
 	if (index < 0 && ((index += x->len) < 0))\
 		return r
+#define INDEXC(x,r) if(index >= x->cap)\
+		return r;\
+	if (index < 0 && ((index += x->cap) < 0))\
+		return r
 
-#endif // _LDLIB_LIST_
+#endif // _JDLIB_LIST_
+
+#ifndef _JDLIB_HASHTABLE
+#define _JDLIB_HASHTABLE
+
+#define JMAP_DEFAULT 33
+typedef struct jmap_node {
+	unsigned int key;
+	jany val;
+	struct jmap_node * next;
+} jmap_node;
+#define S_MN sizeof(jmap_node)
+typedef struct jmap {
+	jllist * nodes;
+	int len;
+	int item_len; // The length of the nodes, default 33
+} jmap;
+#define S_MAP sizeof(jmap)
+
+jmap * jmap_new();
+jmap * jmap_new_sized(int max_length);
+jmap * jmap_free(jmap * map);
+
+jcode jmap_set(jmap * map, jstr key, jany val);
+jany * jmap_get(jmap * map, jstr skey);
+jbool jmap_isexists(jmap * map, jstr skey);
+
+#endif // _JDLIB_HASHTABLE
 
 // Generic Definations
 #define ABS(x) x<0?-x:x

@@ -51,20 +51,20 @@ jcode jllist_append(jllist * l, jany elem) {
 }
 
 jcode jllist_set(jllist * l, int index, jany elem) {
-	INDEX(l,JERR);
+	INDEXC(l, JERR);
 
-	if (l->elems[index] != NULL) l->len++;
+	if (l->elems[index] == NULL) l->len++;
 	l->elems[index] = elem;
 	return JOK;
 }
 
 jany jllist_index(jllist * l, int index) {
-	INDEX(l,NULL);
+	INDEXC(l,NULL);
 	return l->elems[index];
 }
 
 jcode jllist_delete(jllist * l, int index) {
-	INDEX(l,JERR);
+	INDEXC(l,JERR);
 	l->elems[index] = NULL;
 	l->len--;
 }

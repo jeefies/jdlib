@@ -9,6 +9,7 @@ set (SRC
 	${SRCD}/jdlib.c
 	${SRCD}/jdlist.c
 	${SRCD}/jdstr.c
+	${SRCD}/jdhash.c
 )
 
 set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)

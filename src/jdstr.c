@@ -54,7 +54,7 @@ jstr jstr_trim(jstr str) {
 	// With last '\0'
 	rstr = jstr_new(rseek + 1);
 	memcpy(rstr, str, rseek);
-	str_free(str);
+	jstr_free(str);
 
 	return rstr;
 }
