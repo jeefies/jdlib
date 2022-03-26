@@ -9,8 +9,6 @@ enable_testing()
 add_subdirectory (src)
 add_subdirectory (test)
 
-set (CMAKE_INSTALL_PREFIX /usr)
-
 install (TARGETS jd
 	EXPORT JDTarget
 	LIBRARY DESTINATION lib

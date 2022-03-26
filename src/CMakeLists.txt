@@ -12,7 +12,13 @@ set (SRC
 	${SRCD}/jdhash.c
 )
 
-set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
+set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
+set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 
-add_library (jd SHARED ${SRC})
+if (ENABLE_STATIC)
+	add_library (jd_static STATIC $(SRC))
+else()
+	add_library (jd SHARED ${SRC})
+endif()
+
 set_target_properties (jd PROPERTIES PUBLIC_HEADER ${PROJECT_SOURCE_DIR}/include/jdlib.h)

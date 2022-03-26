@@ -7,6 +7,7 @@
 #define JTRUE 1
 typedef char jbool;
 typedef char jcode;
+#define Cjstr const jstr
 
 #ifndef _JDLIB_STRS_
 #define _JDLIB_STRS_
@@ -154,29 +155,59 @@ jcode jdlist_foreach_reverse(jdlist * l, jany(*)(jany,int));
 #ifndef _JDLIB_HASHTABLE
 #define _JDLIB_HASHTABLE
 
-#define JMAP_DEFAULT 33
-typedef struct jmap_node {
+#define JHT_DEFAULT 33
+typedef struct jht_node {
 	unsigned int key;
 	jany val;
-	struct jmap_node * next;
-} jmap_node;
-#define S_MN sizeof(jmap_node)
-typedef struct jmap {
+	struct jht_node * next;
+} jht_node;
+#define S_MN sizeof(jht_node)
+typedef struct jht {
 	jllist * nodes;
 	int len;
 	int item_len; // The length of the nodes, default 33
-} jmap;
-#define S_MAP sizeof(jmap)
+} jht;
+#define S_HT sizeof(jht)
 
-jmap * jmap_new();
-jmap * jmap_new_sized(int max_length);
-jmap * jmap_free(jmap * map);
+jht * jht_new();
+jht * jht_new_sized(int max_length);
+jht * jht_free(jht * map);
 
-jcode jmap_set(jmap * map, jstr key, jany val);
-jany * jmap_get(jmap * map, jstr skey);
-jbool jmap_isexists(jmap * map, jstr skey);
+jcode jht_set(jht * map, Cjstr key, jany val);
+jany * jht_get(jht * map, Cjstr skey);
+jht_node * jht_get_origin(jht * map, Cjstr skey);
+jbool jht_isexists(jht * map, Cjstr skey);
 
 #endif // _JDLIB_HASHTABLE
+
+#ifndef _JDLIB_BINARY_SEARCH_TREE
+#define _JDLIB_BINARY_SEARCH_TREE
+
+typedef struct jbt {
+	jany val;
+	int key;
+	struct jbt *left, *right;
+	// The Depth of left and right
+	int leftc, rightc;
+} jbt;
+#define S_BT sizeof(jbt)
+
+// This is just a so-called init function, but actually it returns NULL without doing anything 
+// NULL == jbt_new()
+jbt * jbt_new();
+jbt * jbt_free(jbt * bt);
+
+jcode jbt_set(jbt * bt, Cjstr skey, jany val);
+jany jbt_get(jbt * bt, Cjstr skey);
+jbt * jbt_get_origin(jbt * bt, Cjstr skey);
+jbool jbt_isexists(jbt * bt, Cjstr skey);
+
+typedef jany(*JBT_CALL)(jany,jstr);
+jcode jbt_preorder(jbt * bt, JBT_CALL call);
+jcode jbt_postorder(jbt * bt, JBT_CALL call);
+jcode jbt_inorder(jbt * bt, JBT_CALL call);
+
+#endif // _JDLIB_BINARY_SEARCH_TREE
 
 // Generic Definations
 #define ABS(x) x<0?-x:x
@@ -185,6 +216,13 @@ jbool jmap_isexists(jmap * map, jstr skey);
 #define isnull(x) x==NULL
 #define rnull(x) if (x == NULL) return NULL
 #define rerr(x) if (x == NULL) return JERR
+
+#define NOT_REACHED() \
+	do {\
+		fprintf(stderr, "NOT_REACHED: %s:%d In function %s.\n", \
+				__FILE__, __LINE__, __func__);\
+		while (1);\
+	} while (0);
 
 jany jfree(jany p);
 jany jmalloc(int size);

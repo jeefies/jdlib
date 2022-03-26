@@ -2,35 +2,35 @@ let SessionLoad = 1
 if &cp | set nocp | endif
 let s:cpo_save=&cpo
 set cpo&vim
-inoremap <silent> <SNR>41_AutoPairsReturn =AutoPairsReturn()
-inoremap <silent> <Plug>snipMateNextOrTrigger =snipMate#TriggerSnippet()
-inoremap <silent> <Plug>snipMateTrigger =snipMate#TriggerSnippet(1)
-inoremap <silent> <Plug>snipMateBack =snipMate#BackwardsSnippet()
-inoremap <silent> <Plug>snipMateShow =snipMate#ShowAvailableSnips()
+inoremap <silent> <SNR>43_AutoPairsReturn =AutoPairsReturn()
 imap <C-R>	 <Plug>snipMateShow
+inoremap <silent> <Plug>snipMateShow =snipMate#ShowAvailableSnips()
+inoremap <silent> <Plug>snipMateBack =snipMate#BackwardsSnippet()
+inoremap <silent> <Plug>snipMateTrigger =snipMate#TriggerSnippet(1)
+inoremap <silent> <Plug>snipMateNextOrTrigger =snipMate#TriggerSnippet()
+inoremap <silent> <SNR>41_AutoPairsReturn =AutoPairsReturn()
 inoremap <S-Tab> 
 imap <C-X> =CtrlXPP()
-inoremap <silent> <SNR>43_AutoPairsReturn =AutoPairsReturn()
 inoremap <silent> <SNR>45_AutoPairsReturn =AutoPairsReturn()
 inoremap <C-U> u
-smap 	 <Plug>snipMateNextOrTrigger
 xmap 	 <Plug>snipMateVisual
+smap 	 <Plug>snipMateNextOrTrigger
 nnoremap <silent>  :Ydc
 vnoremap <silent>  :Ydv
-map <F5> :call RunCompile()<CR>
-map <F4> :TlistOpen<CR>
-map <F3> :NERDTreeToggle<CR>
-noremap <leader>yd :<C-u>Yde<CR>
-nnoremap <silent> <C-T> :<C-u>Ydc<CR>
 vnoremap <silent> <C-T> :<C-u>Ydv<CR>
+nnoremap <silent> <C-T> :<C-u>Ydc<CR>
+noremap <leader>yd :<C-u>Yde<CR>
+map <F3> :NERDTreeToggle<CR>
+map <F4> :TlistOpen<CR>
+map <F5> :call RunCompile()<CR>
 map Q gq
 noremap \yd :Yde
 vmap gx <Plug>NetrwBrowseXVis
 nmap gx <Plug>NetrwBrowseX
-snoremap <silent> <Plug>snipMateNextOrTrigger a=snipMate#TriggerSnippet()
-snoremap <silent> <Plug>snipMateBack a=snipMate#BackwardsSnippet()
-smap <S-Tab> <Plug>snipMateBack
 snoremap <BS> b<BS>
+smap <S-Tab> <Plug>snipMateBack
+snoremap <silent> <Plug>snipMateBack a=snipMate#BackwardsSnippet()
+snoremap <silent> <Plug>snipMateNextOrTrigger a=snipMate#TriggerSnippet()
 vnoremap <silent> <Plug>NetrwBrowseXVis :call netrw#BrowseXVis()
 nnoremap <silent> <Plug>NetrwBrowseX :call netrw#BrowseX(netrw#GX(),netrw#CheckIfRemote(netrw#GX()))
 map <F5> :call RunCompile()
@@ -72,6 +72,7 @@ set ttimeout
 set ttimeoutlen=100
 set undodir=~/.cache/vim/undo//
 set wildmenu
+set window=36
 set winminheight=0
 set winminwidth=0
 let s:so_save = &g:so | let s:siso_save = &g:siso | setg so=0 siso=0 | setl so=-1 siso=-1
@@ -83,15 +84,16 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +100 include/jdlib.h
+badd +1 include/jdlib.h
 badd +1 src/jdlist.c
-badd +1 test/test_jlist.c
+badd +93 test/test_jlist.c
 badd +1 src/jdstr.c
 badd +1 test/test_jstrs.c
 badd +1 src/jdlib.c
 badd +9 test/test.c
 badd +1 src/jdhash.c
-badd +0 test/test_jmap.c
+badd +1 test/test_jhash.c
+badd +1 test/test_jmap.c
 argglobal
 %argdel
 $argadd include/jdlib.h
@@ -103,7 +105,7 @@ tabnew +setlocal\ bufhidden=wipe
 tabnew +setlocal\ bufhidden=wipe
 tabnew +setlocal\ bufhidden=wipe
 tabrewind
-edit test/test.c
+edit test/test_jstrs.c
 let s:save_splitbelow = &splitbelow
 let s:save_splitright = &splitright
 set splitbelow splitright
@@ -123,11 +125,12 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe '1resize ' . ((&lines * 1 + 18) / 36)
-exe '2resize ' . ((&lines * 21 + 18) / 36)
-exe '3resize ' . ((&lines * 9 + 18) / 36)
+exe '1resize ' . ((&lines * 12 + 18) / 37)
+exe '2resize ' . ((&lines * 12 + 18) / 37)
+exe '3resize ' . ((&lines * 8 + 18) / 37)
 argglobal
-if bufexists("test/test.c") | buffer test/test.c | else | edit test/test.c | endif
+if bufexists("test/test_jstrs.c") | buffer test/test_jstrs.c | else | edit test/test_jstrs.c | endif
+balt test/test.c
 let s:cpo_save=&cpo
 set cpo&vim
 inoremap <buffer> <silent> <M-n> :call AutoPairsJump()a
@@ -302,16 +305,16 @@ setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 9 - ((0 * winheight(0) + 0) / 1)
+let s:l = 1 - ((0 * winheight(0) + 6) / 12)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 9
+keepjumps 1
 normal! 0
 wincmd w
 argglobal
 if bufexists("test/test_jlist.c") | buffer test/test_jlist.c | else | edit test/test_jlist.c | endif
-balt test/test.c
+balt test/test_jhash.c
 let s:cpo_save=&cpo
 set cpo&vim
 inoremap <buffer> <silent> <M-n> :call AutoPairsJump()a
@@ -486,7 +489,7 @@ setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 93 - ((15 * winheight(0) + 10) / 21)
+let s:l = 93 - ((5 * winheight(0) + 6) / 12)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
@@ -494,8 +497,8 @@ keepjumps 93
 normal! 05|
 wincmd w
 argglobal
-if bufexists("test/test_jmap.c") | buffer test/test_jmap.c | else | edit test/test_jmap.c | endif
-balt test/test_jstrs.c
+if bufexists("test/test_jhash.c") | buffer test/test_jhash.c | else | edit test/test_jhash.c | endif
+balt test/test_jmap.c
 let s:cpo_save=&cpo
 set cpo&vim
 inoremap <buffer> <silent> <M-n> :call AutoPairsJump()a
@@ -670,17 +673,17 @@ setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 23 - ((4 * winheight(0) + 4) / 9)
+let s:l = 8 - ((3 * winheight(0) + 4) / 8)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 23
-normal! 06|
+keepjumps 8
+normal! 05|
 wincmd w
 3wincmd w
-exe '1resize ' . ((&lines * 1 + 18) / 36)
-exe '2resize ' . ((&lines * 21 + 18) / 36)
-exe '3resize ' . ((&lines * 9 + 18) / 36)
+exe '1resize ' . ((&lines * 12 + 18) / 37)
+exe '2resize ' . ((&lines * 12 + 18) / 37)
+exe '3resize ' . ((&lines * 8 + 18) / 37)
 tabnext
 edit include/jdlib.h
 let s:save_splitbelow = &splitbelow
@@ -699,8 +702,8 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe '1resize ' . ((&lines * 6 + 18) / 36)
-exe '2resize ' . ((&lines * 25 + 18) / 36)
+exe '1resize ' . ((&lines * 8 + 18) / 37)
+exe '2resize ' . ((&lines * 25 + 18) / 37)
 argglobal
 balt src/jdhash.c
 let s:cpo_save=&cpo
@@ -877,12 +880,12 @@ setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 68 - ((2 * winheight(0) + 3) / 6)
+let s:l = 214 - ((3 * winheight(0) + 4) / 8)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 68
-normal! 05|
+keepjumps 214
+normal! 016|
 wincmd w
 argglobal
 if bufexists("src/jdhash.c") | buffer src/jdhash.c | else | edit src/jdhash.c | endif
@@ -1061,15 +1064,15 @@ setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 46 - ((18 * winheight(0) + 12) / 25)
+let s:l = 53 - ((19 * winheight(0) + 12) / 25)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 46
-normal! 012|
+keepjumps 53
+normal! 0
 wincmd w
-exe '1resize ' . ((&lines * 6 + 18) / 36)
-exe '2resize ' . ((&lines * 25 + 18) / 36)
+exe '1resize ' . ((&lines * 8 + 18) / 37)
+exe '2resize ' . ((&lines * 25 + 18) / 37)
 tabnext
 edit include/jdlib.h
 let s:save_splitbelow = &splitbelow
@@ -1088,8 +1091,8 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe '1resize ' . ((&lines * 6 + 18) / 36)
-exe '2resize ' . ((&lines * 25 + 18) / 36)
+exe '1resize ' . ((&lines * 8 + 18) / 37)
+exe '2resize ' . ((&lines * 25 + 18) / 37)
 argglobal
 balt src/jdlist.c
 let s:cpo_save=&cpo
@@ -1266,12 +1269,12 @@ setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 151 - ((2 * winheight(0) + 3) / 6)
+let s:l = 10 - ((3 * winheight(0) + 4) / 8)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 151
-normal! 0
+keepjumps 10
+normal! 024|
 wincmd w
 argglobal
 if bufexists("src/jdlist.c") | buffer src/jdlist.c | else | edit src/jdlist.c | endif
@@ -1450,15 +1453,15 @@ setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 11 - ((10 * winheight(0) + 12) / 25)
+let s:l = 429 - ((19 * winheight(0) + 12) / 25)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 11
-normal! 0
+keepjumps 429
+normal! 05|
 wincmd w
-exe '1resize ' . ((&lines * 6 + 18) / 36)
-exe '2resize ' . ((&lines * 25 + 18) / 36)
+exe '1resize ' . ((&lines * 8 + 18) / 37)
+exe '2resize ' . ((&lines * 25 + 18) / 37)
 tabnext
 edit include/jdlib.h
 let s:save_splitbelow = &splitbelow
@@ -1477,8 +1480,8 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe '1resize ' . ((&lines * 6 + 18) / 36)
-exe '2resize ' . ((&lines * 25 + 18) / 36)
+exe '1resize ' . ((&lines * 8 + 18) / 37)
+exe '2resize ' . ((&lines * 25 + 18) / 37)
 argglobal
 balt src/jdlib.c
 let s:cpo_save=&cpo
@@ -1655,11 +1658,11 @@ setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 29 - ((2 * winheight(0) + 3) / 6)
+let s:l = 33 - ((3 * winheight(0) + 4) / 8)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 29
+keepjumps 33
 normal! 07|
 wincmd w
 argglobal
@@ -1839,15 +1842,15 @@ setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 5 - ((4 * winheight(0) + 12) / 25)
+let s:l = 25 - ((24 * winheight(0) + 12) / 25)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 5
-normal! 02|
+keepjumps 25
+normal! 0
 wincmd w
-exe '1resize ' . ((&lines * 6 + 18) / 36)
-exe '2resize ' . ((&lines * 25 + 18) / 36)
+exe '1resize ' . ((&lines * 8 + 18) / 37)
+exe '2resize ' . ((&lines * 25 + 18) / 37)
 tabnext
 edit include/jdlib.h
 let s:save_splitbelow = &splitbelow
@@ -1866,8 +1869,8 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe '1resize ' . ((&lines * 6 + 18) / 36)
-exe '2resize ' . ((&lines * 25 + 18) / 36)
+exe '1resize ' . ((&lines * 8 + 18) / 37)
+exe '2resize ' . ((&lines * 25 + 18) / 37)
 argglobal
 balt src/jdstr.c
 let s:cpo_save=&cpo
@@ -2044,11 +2047,11 @@ setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 103 - ((2 * winheight(0) + 3) / 6)
+let s:l = 104 - ((3 * winheight(0) + 4) / 8)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 103
+keepjumps 104
 normal! 016|
 wincmd w
 argglobal
@@ -2228,15 +2231,15 @@ setlocal wrap
 setlocal wrapmargin=0
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 138 - ((21 * winheight(0) + 12) / 25)
+let s:l = 22 - ((15 * winheight(0) + 12) / 25)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 138
-normal! 026|
+keepjumps 22
+normal! 012|
 wincmd w
-exe '1resize ' . ((&lines * 6 + 18) / 36)
-exe '2resize ' . ((&lines * 25 + 18) / 36)
+exe '1resize ' . ((&lines * 8 + 18) / 37)
+exe '2resize ' . ((&lines * 25 + 18) / 37)
 tabnext 1
 set stal=1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0

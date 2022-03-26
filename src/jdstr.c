@@ -88,6 +88,7 @@ jstrs * jstrs_free(jstrs * strs) {
 		jfree(str);
 	}
 	free(strs);
+
 	return NULL;
 }
 
@@ -102,6 +103,8 @@ jcode jstrs_print(const jstrs * strs, const jstr sep) {
 		printf("%s%s", strs->strs[i], sep);
 	}
 	printf(strs->strs[i]);
+
+	return JOK;
 }
 
 jstr jstrs_index(const jstrs * strs, int index) {
@@ -123,6 +126,8 @@ int jstrs_find(const jstrs * strs, const jstr dst) {
 jcode jstrs_append(jstrs * strs, const jstr src) {
 	strs->strs = (jstr *)realloc(strs->strs, sizeof(jstr) * (strs->len + 1));
 	strs->strs[strs->len++] = jstr_copy(src);
+
+	return JOK;
 }
 
 jcode jstrs_set(jstrs * strs, int index, const jstr src) {
@@ -130,12 +135,16 @@ jcode jstrs_set(jstrs * strs, int index, const jstr src) {
 
 	jstrs_delete(strs, index);
 	strs->strs[index] = jstr_copy(src);
+
+	return JOK;
 }
 
 jcode jstrs_delete(jstrs * strs, int index) {
 	INDEX(strs,JERR);
 
 	strs->strs[index] = jstr_free(strs->strs[index]);
+
+	return JOK;
 }
 
 #endif // _JDLIB_STR_
