@@ -157,9 +157,9 @@ __END:
 }
 
 jany jlist_index(jlist * l, int index) {
+	rnull(l);
 	jlist_node * node = l->node;
-	if (node == NULL) 
-		return NULL;
+	rnull(node);
 
 	for (int i = 0; i < index; i++) {
 		if (node->next == NULL)
@@ -168,6 +168,40 @@ jany jlist_index(jlist * l, int index) {
 	}
 
 	return node->val;
+}
+
+jany jlist_pop(jlist * l) {
+	rnull(l);
+	jlist_node * node = l->node;
+	rnull(node);
+
+	if (l->len == 1) {
+		jany val = node->val;
+		l->node = _jlist_node_free(node);
+		l->len--;
+		return val;
+	}
+
+	for (int i = 0; i < l->len - 2; i++) {
+		node = node->next;
+	}
+
+	jany val = node->next->val;
+	node->next = _jlist_node_free(node->next);
+
+	l->len--;
+	return val;
+}
+
+jany jlist_popl(jlist * l) {
+	rnull(l);
+	jlist_node * node = l->node;
+	rnull(node);
+
+	jany val = node->val;
+	l->node = _jlist_node_free(node);
+	l->len--;
+	return val;
 }
 
 jlist * jlist_free(jlist * l) {

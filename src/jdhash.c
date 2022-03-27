@@ -128,34 +128,44 @@ jht_node * jht_node_free(jht_node * node) {
 }
 
 jbt * jbt_new() {
-	return NULL;
+	jbt * bt = (jbt *)jmalloc(S_BT);
+	bt->node = NULL;
+	return bt;
 }
 
-jbt * jbt_new_node(jany val, jstr skey) {
+jbt_node * jbt_new_node(jany val, jstr skey) {
 	rnull(skey);
 
 	unsigned key = hash(skey);
-	jbt * nbt = (jbt *)jmalloc(S_BT);
+	jbt_node * nbt = (jbt_node *)jmalloc(S_BTN);
 	nbt->val = val;
 	nbt->key = key;
 	nbt->left = nbt->right = NULL;
-	nbt->leftc = nbt->rightc = 0;
 	
 	return nbt;
 }
 
-jbt * jbt__exist(jbt * bt, unsigned key) {
+/* TODO not finish here
+jcode jbt_set(jbt * bt, jstr skey, jany val) {
+	rerr(bt);
+
+	unsigned key = hash(skey);
+	jbt_node * node = jbt_node_exist(bt->node, key);
+}
+*/
+
+jbt_node * jbt_node_exist(jbt_node * bt, unsigned key) {
 	rnull(bt);
 
 	if (bt->key == key)
 		return bt;
 
 	if (bt->key < key) {
-		rnull(bt->right);
-		return jbt__exist(bt->right, key);
+		if (bt->right == NULL) return bt;
+		return jbt_node_exist(bt->right, key);
 	} else {
-		rnull(bt->left);
-		return jbt__exist(bt->left, key);
+		if (bt->left == NULL) return bt;
+		return jbt_node_exist(bt->left, key);
 	}
 
 	NOT_REACHED();

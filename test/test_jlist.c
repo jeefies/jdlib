@@ -53,9 +53,13 @@ void test_linked_list() {
 
 	printf("delete 0 and li[0]: %s\n", jlist_index(li, 0));
 	// Test insert 0
-	jlist_insert(li, 0, "SHOULD BE FRIST");
+	jlist_insert(li, 0, "SHOULD BE FIRST");
 	assert(li->len == 4);
 	printf("insert 0 and li[0]: %s\n", jlist_index(li, 0));
+	// Test pop and popl
+	printf("PopL: %s, should be \"SHOULD BE FIRST\"\n", jlist_popl(li));
+	assert(li->len == 3);
+	printf("Pop: %d, should be \"10\"\n", jlist_pop(li));
 	// Test free
 	jlist_free(li);
 }

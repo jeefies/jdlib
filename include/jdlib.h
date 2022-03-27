@@ -104,6 +104,9 @@ jlist * jlist_free();
 jcode jlist_append(jlist * l, jany elem);
 jcode jlist_delete(jlist * l, int index);
 jcode jlist_insert(jlist * l, int index, jany elem);
+
+jany jlist_pop(jlist * l);
+jany jlist_popl(jlist * l);
 // Read Method
 jany jlist_index(jlist * l, int index);
 
@@ -183,13 +186,16 @@ jbool jht_isexists(jht * map, Cjstr skey);
 #ifndef _JDLIB_BINARY_SEARCH_TREE
 #define _JDLIB_BINARY_SEARCH_TREE
 
-typedef struct jbt {
+typedef struct jbt_node {
 	jany val;
 	int key;
-	struct jbt *left, *right;
-	// The Depth of left and right
-	int leftc, rightc;
+	struct jbt_node *left, *right;
+} jbt_node;
+
+typedef struct jbt {
+	jbt_node * node;
 } jbt;
+#define S_BTN sizeof(jbt_node)
 #define S_BT sizeof(jbt)
 
 // This is just a so-called init function, but actually it returns NULL without doing anything 
