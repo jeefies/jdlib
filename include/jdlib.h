@@ -110,6 +110,19 @@ jany jlist_popl(jlist * l);
 // Read Method
 jany jlist_index(jlist * l, int index);
 
+struct jlist_classic {
+	int remain_length;
+	jany val;
+	struct jlist_classic * next;
+};
+typedef struct jlist_classic jlist_classic;
+
+jcode jlist_classic_append_left(jlist_classic ** l, jany elem);
+jcode jlist_classic_append(jlist_classic ** l, jany elem);
+jcode jlist_classic_insert(jlist_classic ** l, int index, jany elem);
+jany jlist_classic_delete(jlist_classic ** l, int index);
+jany jlist_classic_pop(jlist_classic ** l);
+jany jlist_classic_pop_left(jlist_classic ** l);
 
 // Double Linked List
 typedef struct jdlist_node {
