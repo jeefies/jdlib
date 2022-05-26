@@ -28,10 +28,10 @@ void test_strs() {
 	jstrs_print(strs2, "\n");
 	printf("\n...\n");
 
-	// test delete method
-	jstrs_delete(strs2, 2);
+	// test remove method
+	jstrs_remove(strs2, 2);
 	jstrs_append(strs2, "Hello bitch");
-	jstrs_delete(strs2, 1);
+	jstrs_remove(strs2, 1);
 	jstrs_print(strs2, "\n");
 	printf("\n....\n");
 

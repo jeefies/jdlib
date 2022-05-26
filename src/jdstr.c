@@ -133,13 +133,13 @@ jcode jstrs_append(jstrs * strs, const jstr src) {
 jcode jstrs_set(jstrs * strs, int index, const jstr src) {
 	INDEX(strs,JERR);
 
-	jstrs_delete(strs, index);
+	jstrs_remove(strs, index);
 	strs->strs[index] = jstr_copy(src);
 
 	return JOK;
 }
 
-jcode jstrs_delete(jstrs * strs, int index) {
+jcode jstrs_remove(jstrs * strs, int index) {
 	INDEX(strs,JERR);
 
 	strs->strs[index] = jstr_free(strs->strs[index]);

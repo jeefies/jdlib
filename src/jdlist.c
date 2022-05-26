@@ -63,7 +63,7 @@ jany jllist_index(jllist * l, int index) {
 	return l->elems[index];
 }
 
-jcode jllist_delete(jllist * l, int index) {
+jcode jllist_remove(jllist * l, int index) {
 	INDEXC(l,JERR);
 	l->elems[index] = NULL;
 	l->len--;
@@ -133,7 +133,7 @@ END:
 	return JOK;
 }
 
-jcode jlist_delete(jlist * l, int index) {
+jcode jlist_remove(jlist * l, int index) {
 	jlist_node * node = l->node;
 	if (node == NULL)
 		return JERR;
@@ -217,27 +217,39 @@ jlist_classic * jlist_classic_new() {
 	return (jlist_classic *)malloc(sizeof(jlist_classic));
 }
 
-void jlist_classic_check(jlist_classic ** l) {
-	if (l == NULL) {
-		jlist_classic * result = jlist_classic_new();
-		*l = result;
+jlist_classic * jlist_classic_free(jlist_classic * li) {
+	rnull(li);
+	jlist_classic * next = li->next;
+	free(li);
+	return next;
+}
+
+jcode jlist_classic_check(jlist_classic ** l, jany elem) {
+	if (*l == NULL) {
+		*l = jlist_classic_new();
+		(*l)->val = elem;
+		return JOK;
 	}
+	return JERR;
 }
 
 jcode jlist_classic_depthappend(jlist_classic *  li, jany elem, int len, int aim) {
 	li->remain_length = len;
-	if (aim != 0 && li->next == NULL) {
-		li->next = jlist_classic_new();
-	}
 
 	if (len == aim) {
 		jlist_classic * newNode = jlist_classic_new();
-		newNode->val = elem;
 
-		if (li->next != NULL) {
+		newNode->val = li->val;
+		li->val = elem;
+
+		if (li->next != NULL)
 			newNode->next = li->next->next;
-		}
+
 		li->next = newNode;
+	}
+
+	if (len > 0 && li->next == NULL) {
+		li->next = jlist_classic_new();
 	}
 
 	if (li->next != NULL)
@@ -246,32 +258,32 @@ jcode jlist_classic_depthappend(jlist_classic *  li, jany elem, int len, int aim
 }
 
 jcode jlist_classic_append(jlist_classic ** l, jany elem) {
-	jlist_classic_check(l);
-
-	jlist_classic_depthappend(*l, elem, (*l)->remain_length + 1, 1);
+	if (jlist_classic_check(l, elem))
+		jlist_classic_depthappend(*l, elem, (*l)->remain_length + 1, 0);
 }
 
 jcode jlist_classic_append_left(jlist_classic ** l, jany elem) {
-	jlist_classic_check(l);
-
-	jlist_classic_depthappend(*l, elem, (*l)->remain_length + 1, (*l)->remain_length + 1);
+	if (jlist_classic_check(l, elem))
+		jlist_classic_depthappend(*l, elem, (*l)->remain_length + 1, (*l)->remain_length + 1);
 }
 
 jcode jlist_classic_insert(jlist_classic ** l, int index, jany elem) {
-	jlist_classic_check(l);
-
-	jlist_classic_depthappend(*l, elem, (*l)->remain_length + 1, (*l)->remain_length + 1 - index);
+	if (jlist_classic_check(l, elem))
+		jlist_classic_depthappend(*l, elem, (*l)->remain_length + 1, (*l)->remain_length + 1 - index);
 }
 
 jany jlist_classic_depthremove(jlist_classic * li, int len, int aim) {
+	rnull(li);
+
 	li->remain_length = len;
 	if (len == aim) {
-		jlist_classic * result = li->next;
-		if (result->next != NULL) {
-			li->next = result->next;
-		}
+		// move next node's val to this and remove next node structure
+		jany val = li->val;
+		li->val = li->next->val;
+		li->next = jlist_classic_free(li->next);
+
 		jlist_classic_depthremove(li->next, len - 1, aim);
-		return result->val;
+		return val;
 	}
 
 	if (li->next != NULL)
@@ -279,7 +291,7 @@ jany jlist_classic_depthremove(jlist_classic * li, int len, int aim) {
 	return NULL;
 }
 
-jany jlist_classic_delete(jlist_classic ** l, int index) {
+jany jlist_classic_remove(jlist_classic ** l, int index) {
 	rnull(l);
 	return jlist_classic_depthremove(*l, (*l)->remain_length - 1, (*l)->remain_length - 1 - index);
 }
@@ -292,6 +304,28 @@ jany jlist_classic_pop(jlist_classic ** l) {
 jany jlist_classic_pop_left(jlist_classic ** l) {
 	rnull(l);
 	return jlist_classic_depthremove(*l, (*l)->remain_length - 1, (*l)->remain_length - 1);
+}
+
+jlist_classic * jlist_classic_depthindex(jlist_classic * l, int aim) {
+	if (l->remain_length == aim) {
+		return l;
+	}
+
+	if (l->next) return jlist_classic_depthindex(l->next, aim);
+	return NULL;
+}
+
+jany jlist_classic_index(jlist_classic ** l, int index) {
+	rnull(l);
+
+	jlist_classic * result =  jlist_classic_depthindex(*l, (*l)->remain_length - index);
+	if (result) return result->val;
+	return NULL;
+}
+
+int jlist_classic_len(jlist_classic ** l) {
+	if (!l) return 0;
+	return (*l)->remain_length + 1;
 }
 
 #define JDLIST_PRECHECK if (start == NULL) {\

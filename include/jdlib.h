@@ -53,8 +53,8 @@ int jstrs_find (const jstrs * strs, const jstr dst);
 // Write ops
 // It just spare a NULL space if src is NULL.
 jcode jstrs_append(jstrs * strs, const jstr src);
-jcode jstrs_delete(jstrs * strs, int index);
-// It works like jstrs_delete if src is NULL
+jcode jstrs_remove(jstrs * strs, int index);
+// It works like jstrs_remove if src is NULL
 jcode jstrs_set(jstrs * strs, int index, const jstr src);
 #endif // _JDLIB_STRS_
 
@@ -80,7 +80,7 @@ jllist * jllist_free(jllist * l);
 jcode jllist_append(jllist * l, jany elem);
 jcode jllist_append_empty(jllist * l, jany elem);
 jcode jllist_set(jllist * l, int index, jany elem);
-jcode jllist_delete(jllist * l, int index);
+jcode jllist_remove(jllist * l, int index);
 // Read Method
 jany jllist_index(jllist * l, int index);
 
@@ -102,7 +102,7 @@ jlist * jlist_new();
 jlist * jlist_free();
 // Write Method
 jcode jlist_append(jlist * l, jany elem);
-jcode jlist_delete(jlist * l, int index);
+jcode jlist_remove(jlist * l, int index);
 jcode jlist_insert(jlist * l, int index, jany elem);
 
 jany jlist_pop(jlist * l);
@@ -110,6 +110,7 @@ jany jlist_popl(jlist * l);
 // Read Method
 jany jlist_index(jlist * l, int index);
 
+// Classic Linked List
 struct jlist_classic {
 	int remain_length;
 	jany val;
@@ -120,9 +121,12 @@ typedef struct jlist_classic jlist_classic;
 jcode jlist_classic_append_left(jlist_classic ** l, jany elem);
 jcode jlist_classic_append(jlist_classic ** l, jany elem);
 jcode jlist_classic_insert(jlist_classic ** l, int index, jany elem);
-jany jlist_classic_delete(jlist_classic ** l, int index);
+jany jlist_classic_index(jlist_classic **  l, int index);
+jany jlist_classic_remove(jlist_classic ** l, int index);
 jany jlist_classic_pop(jlist_classic ** l);
 jany jlist_classic_pop_left(jlist_classic ** l);
+
+int jlist_classic_len(jlist_classic ** l);
 
 // Double Linked List
 typedef struct jdlist_node {

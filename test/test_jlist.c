@@ -47,11 +47,11 @@ void test_linked_list() {
 	// ["Static string", "Mid Insert", 5, 10]
 	// and Test index
 	printf("insert 1 to: %s\n", jlist_index(li, 1)); // Mid Insert
-	// Test delete
-	jlist_delete(li, 0);
+	// Test remove
+	jlist_remove(li, 0);
 	assert(li->len == 3);
 
-	printf("delete 0 and li[0]: %s\n", jlist_index(li, 0));
+	printf("remove 0 and li[0]: %s\n", jlist_index(li, 0));
 	// Test insert 0
 	jlist_insert(li, 0, "SHOULD BE FIRST");
 	assert(li->len == 4);
@@ -62,6 +62,29 @@ void test_linked_list() {
 	printf("Pop: %d, should be \"10\"\n", jlist_pop(li));
 	// Test free
 	jlist_free(li);
+}
+
+void test_classic_linked_list() {
+#define jcl jlist_classic
+	jcl * li = NULL;
+
+	jlist_classic_append(&li, "three");
+	jlist_classic_insert(&li, 0, "one");
+	jlist_classic_insert(&li, 1, "two");
+	jcl * backup =  li;
+	printf("Length : %d\n", jlist_classic_len(&li));
+	for (int i = 0; i < jlist_classic_len(&li); i++) {
+		printf("JCL index[%d] = %s\n", i, backup->val);
+		backup = backup->next;
+	}
+
+	printf("Remove index[1] = %s, should be \"two\".\n", jlist_classic_remove(&li, 1));
+	backup =  li;
+	for (int i = 0; i < li->remain_length + 1; i++) {
+		printf("JCL index[%d] = %s\n", i, backup->val);
+		backup = backup->next;
+	}
+
 }
 
 jany pr(jany s, int index) {
@@ -121,6 +144,8 @@ int main() {
 	test_linked_list();
 	printf("- - - - - - - - - - - - -\n");
 	test_double_linked_list();
+	printf("- - - - - - - - - - - - -\n");
+	test_classic_linked_list();
 
 	printf("jllist, jlist, jdlist test ok!\n");
 
