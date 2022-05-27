@@ -64,27 +64,31 @@ void test_linked_list() {
 	jlist_free(li);
 }
 
-void test_classic_linked_list() {
 #define jcl jlist_classic
+void print_jcl(jcl * l) {
+	int len = jlist_classic_len(&l);
+	printf("Length : %d\n", len);
+	for (int i = 0; i < len; i++) {
+		printf("Index[%d] = %s\n", i, l->val);
+		l = l->next;
+	}
+}
+
+
+void test_classic_linked_list() {
 	jcl * li = NULL;
 
 	jlist_classic_append(&li, "three");
-	jlist_classic_insert(&li, 0, "one");
+	print_jcl(li); printf("\n");
+	jlist_classic_append_left(&li, "one");
+	print_jcl(li); printf("\n");
 	jlist_classic_insert(&li, 1, "two");
-	jcl * backup =  li;
-	printf("Length : %d\n", jlist_classic_len(&li));
-	for (int i = 0; i < jlist_classic_len(&li); i++) {
-		printf("JCL index[%d] = %s\n", i, backup->val);
-		backup = backup->next;
-	}
+	print_jcl(li); printf("\n");
+	jlist_classic_append_left(&li, "zero");
+	print_jcl(li); printf("\n");
 
-	printf("Remove index[1] = %s, should be \"two\".\n", jlist_classic_remove(&li, 1));
-	backup =  li;
-	for (int i = 0; i < li->remain_length + 1; i++) {
-		printf("JCL index[%d] = %s\n", i, backup->val);
-		backup = backup->next;
-	}
-
+	printf("Remove index[2] = %s, should be \"two\".\n", jlist_classic_remove(&li, 2));
+	print_jcl(li); printf("\n");
 }
 
 jany pr(jany s, int index) {

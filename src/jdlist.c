@@ -237,13 +237,15 @@ jcode jlist_classic_depthappend(jlist_classic *  li, jany elem, int len, int aim
 	li->remain_length = len;
 
 	if (len == aim) {
+		// Add a new node after this and exchange the content of this two nodes
 		jlist_classic * newNode = jlist_classic_new();
 
+		// Exchange value
 		newNode->val = li->val;
 		li->val = elem;
 
 		if (li->next != NULL)
-			newNode->next = li->next->next;
+			newNode->next = li->next;
 
 		li->next = newNode;
 	}
@@ -324,7 +326,7 @@ jany jlist_classic_index(jlist_classic ** l, int index) {
 }
 
 int jlist_classic_len(jlist_classic ** l) {
-	if (!l) return 0;
+	if (!(*l)) return 0;
 	return (*l)->remain_length + 1;
 }
 

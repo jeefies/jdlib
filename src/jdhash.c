@@ -5,12 +5,14 @@
 
 #include <jdlib.h>
 
+#define hash hashTime33
+
 extern jht_node * jht_node_new(jstr key, jany val);
 extern jht_node * jht_node_free(jht_node * node);
 extern jht_node * jht_exists(jht * map, unsigned key);
 
 // Use time33
-unsigned int hash(jstr str) {
+unsigned int hashTime33(jstr str) {
 	unsigned int hash = 5381;
 	while (*str)
 		hash += (hash << 5) + (*str++);
@@ -102,8 +104,7 @@ jht_node * jht_exists(jht * map, unsigned key) {
 	// Key does not exist
 	rnull(node);
 
-	// Find in group
-	// FIXED: Must be do while loop instead of normal while loop!
+	// compare the key and return the node
 	do {
 		if (node->key == key)
 			return node;
@@ -127,17 +128,36 @@ jht_node * jht_node_free(jht_node * node) {
 	return jfree(node);
 }
 
-jbt * jbt_new() {
-	jbt * bt = (jbt *)jmalloc(S_BT);
+// Returns the node has the key.
+// Returns NULL if the key doesn't exist
+jbst_node * jbst_node_exist(jbst_node * bt, unsigned key) {
+	rnull(bt);
+
+	if (bt->key == key)
+		return bt;
+
+	if (bt->key < key) {
+		// Current key is smaller than wanted key
+		// Find in right nodes unless there's no right node anymore
+		if (bt->right == NULL) return NULL;
+		return jbst_node_exist(bt->right, key);
+	} else {
+		if (bt->left == NULL) return NULL;
+		return jbst_node_exist(bt->left, key);
+	}
+
+	NOT_REACHED();
+	return NULL;
+}
+
+jbst * jbst_new() {
+	jbst * bt = (jbst *)jmalloc(S_BST);
 	bt->node = NULL;
 	return bt;
 }
 
-jbt_node * jbt_new_node(jany val, jstr skey) {
-	rnull(skey);
-
-	unsigned key = hash(skey);
-	jbt_node * nbt = (jbt_node *)jmalloc(S_BTN);
+jbst_node * jbst_new_node(jany val, unsigned key) {
+	jbst_node * nbt = (jbst_node *)jmalloc(S_BSTN);
 	nbt->val = val;
 	nbt->key = key;
 	nbt->left = nbt->right = NULL;
@@ -145,31 +165,72 @@ jbt_node * jbt_new_node(jany val, jstr skey) {
 	return nbt;
 }
 
-/* TODO not finish here
-jcode jbt_set(jbt * bt, jstr skey, jany val) {
-	rerr(bt);
-
-	unsigned key = hash(skey);
-	jbt_node * node = jbt_node_exist(bt->node, key);
-}
-*/
-
-jbt_node * jbt_node_exist(jbt_node * bt, unsigned key) {
+jbst_node * jbst_get_origin(jbst * bt, Cjstr skey) {
 	rnull(bt);
+	unsigned key = hash(skey);
+	return jbst_node_exist(bt->node, key);
+}
 
-	if (bt->key == key)
-		return bt;
+jbst_node * jbst_keyget_origin(jbst * bt, unsigned key) {
+	rnull(bt);
+	return jbst_node_exist(bt->node, key);
+}
 
-	if (bt->key < key) {
-		if (bt->right == NULL) return bt;
-		return jbt_node_exist(bt->right, key);
-	} else {
-		if (bt->left == NULL) return bt;
-		return jbt_node_exist(bt->left, key);
+jany jbst_get(jbst * bt, Cjstr skey) {
+	jbst_node * node = jbst_get_origin(bt, skey);
+	if (!node) return NULL;
+	return node->val;
+}
+
+jany jbst_keyget(jbst * bt, unsigned key) {
+	jbst_node * node = jbst_keyget_origin(bt, key);
+	if (!node) return NULL;
+	return node->val;
+}
+
+jbool jbst_isexists(jbst * bt, Cjstr skey) {
+	if (!jbst_get_origin(bt, skey)) return JFALSE;
+	return JTRUE;
+}
+
+jbool jbst_keyisexists(jbst * bt, unsigned key) {
+	if (!jbst_keyget_origin(bt, key)) return JFALSE;
+	return JTRUE;
+}
+
+jcode jbst_set(jbst * bt, Cjstr skey, jany val) {
+	unsigned key = hash(skey);
+	return jbst_keyset(bt, key, val);
+}
+
+jcode jbst_keyset(jbst * bt, unsigned key, jany val) {
+	rerr(bt);
+	jbst_node * btn = bt->node;
+	while (1) {
+		if (btn->key == key) {
+			btn->val = val;
+			return JOK;
+		}
+
+		if (btn->key < key) {
+			// Current Key is smaller than wanted key
+			// Search In left Nodes
+			if (btn->left == NULL) {
+				jbst_node * nbtn = jbst_new_node(val, key);
+				btn->left = nbtn;
+			}
+
+			btn = btn->left;
+		} else {
+			if (btn->right == NULL) {
+				jbst_node * nbtn = jbst_new_node(val, key);
+				btn->right = nbtn;
+			}
+
+			btn = btn->right;
+		}
 	}
-
 	NOT_REACHED();
-	return NULL;
 }
 
 #endif // _JDLIST_HASH_C
