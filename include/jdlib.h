@@ -7,16 +7,12 @@
 #define JTRUE 1
 typedef char jbool;
 typedef char jcode;
-
-// #define ALLOCATE(type) (type*)malloc(sizeof(type))
-// #define REALLOCATE(p,type,size) (type*)realloc(p,sizeof(type) * size)
+#define Cjstr const jstr
 
 #ifndef _JDLIB_STRS_
 #define _JDLIB_STRS_
-
 typedef char jchar;
 typedef jchar* jstr;
-#define Cjstr const jstr
 typedef struct jstrs {
 	jstr * strs;
 	int len;
@@ -28,12 +24,15 @@ typedef struct jstrs {
 
 // Return a copy create by malloc
 jstr jstr_copy(jstr sth);
+jstr jstr_lcopy(jstr sth, int len);
 jstr jstr_from(jstr sth);
 // Return a new jstr instance (last space is set to '\0')
 jstr jstr_new(int size);
 jstr jstr_free(jstr str);
 
 // str operations
+jstr jstr_ltrim(jstr str);
+jstr jstr_rtrim(jstr str);
 jstr jstr_trim(jstr str);
 jstrs * jstr_sep(jstr str, const jchar chr);
 jstrs * jstr_split(jstr str, const jstr sep);
@@ -165,11 +164,11 @@ jcode jdlist_foreach(jdlist * l, jany(*)(jany, int));
 jcode jdlist_foreach_reverse(jdlist * l, jany(*)(jany,int));
 
 // For check the index if it's out of range
-#define INDEX(x,r) if(index >= x->len)\
+#define CHECK_INDEX(x,r) if(index >= x->len)\
 		return r;\
 	if (index < 0 && ((index += x->len) < 0))\
 		return r
-#define INDEXC(x,r) if(index >= x->cap)\
+#define CHECK_INDEXC(x,r) if(index >= x->cap)\
 		return r;\
 	if (index < 0 && ((index += x->cap) < 0))\
 		return r
@@ -207,10 +206,6 @@ jbool jht_isexists(jht * map, Cjstr skey);
 #ifndef _JDLIB_BINARY_SEARCH_TREE
 #define _JDLIB_BINARY_SEARCH_TREE
 
-// BINARY SEARCH TREE
-// Left Nodes are always smaller than parent node
-// Right Nodes are always graeter than parent node
-
 typedef struct jbst_node {
 	jany val;
 	int key;
@@ -223,6 +218,8 @@ typedef struct jbst {
 #define S_BSTN sizeof(jbst_node)
 #define S_BST sizeof(jbst)
 
+// This is just a so-called init function, but actually it returns NULL without doing anything 
+// NULL == jbst_new()
 jbst * jbst_new();
 jbst * jbst_free(jbst * bt);
 
@@ -235,10 +232,10 @@ jbst_node * jbst_keyget_origin(jbst * bt, unsigned key);
 jbool jbst_isexists(jbst * bt, Cjstr skey);
 jbool jbst_keyisexists(jbst * bt, unsigned key);
 
-typedef jany(*jbst_CALL)(jany,jstr);
-jcode jbst_preorder(jbst * bt, jbst_CALL call);
-jcode jbst_postorder(jbst * bt, jbst_CALL call);
-jcode jbst_inorder(jbst * bt, jbst_CALL call);
+typedef jany(*JBT_CALL)(jany,jstr);
+jcode jbst_preorder(jbst * bt, JBT_CALL call);
+jcode jbst_postorder(jbst * bt, JBT_CALL call);
+jcode jbst_inorder(jbst * bt, JBT_CALL call);
 
 #endif // _JDLIB_BINARY_SEARCH_TREE
 

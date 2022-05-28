@@ -51,7 +51,7 @@ jcode jllist_append(jllist * l, jany elem) {
 }
 
 jcode jllist_set(jllist * l, int index, jany elem) {
-	INDEXC(l, JERR);
+	CHECK_INDEXC(l, JERR);
 
 	if (l->elems[index] == NULL) l->len++;
 	l->elems[index] = elem;
@@ -59,12 +59,12 @@ jcode jllist_set(jllist * l, int index, jany elem) {
 }
 
 jany jllist_index(jllist * l, int index) {
-	INDEXC(l,NULL);
+	CHECK_INDEXC(l,NULL);
 	return l->elems[index];
 }
 
 jcode jllist_remove(jllist * l, int index) {
-	INDEXC(l,JERR);
+	CHECK_INDEXC(l,JERR);
 	l->elems[index] = NULL;
 	l->len--;
 }
@@ -390,7 +390,7 @@ jcode jdlist_append_front(jdlist * l, jany val) {
 
 jcode jdlist_remove(jdlist * l, int index) {
 	jdlist_node * start = l->start;
-	INDEX(l,JERR);
+	CHECK_INDEX(l,JERR);
 
 	if (index == 0) {
 		l->start = _jdlist_node_free(start);

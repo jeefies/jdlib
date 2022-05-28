@@ -15,11 +15,17 @@ jstr jstr_free(jstr str) {
 
 jstr jstr_copy(jstr sth) {
 	rnull(sth);
-	int l = strlen(sth);
+	return jstr_lcopy(sth, strlen(sth));
+}
 
-	jstr r = jstr_new(l + 1);
-	memcpy(r, sth, l);
+jstr jstr_lcopy(jstr sth, int len) {
+	rnull(sth);
+
+	jstr r = jstr_new(len + 1);
+	memcpy(r, sth, len);
+	r[len] = '\0';
 	return r;
+
 }
 
 jstr jstr_from(jstr sth) {
@@ -41,20 +47,30 @@ jstr jstr_ltrim(jstr str) {
 	return jstr_copy(str);
 }
 
-jstr jstr_trim(jstr str) {
-	jstr rstr;
-
-	str = jstr_ltrim(str);
+jstr jstr_rtrim(jstr str) {
+	// rseek not only means the seek of the string but also means 
+	// the length of the result string
 	int rseek = strlen(str);
 	// search for end
 	// rseek -1 for ignore the last and make sure the length ok
 	while (isspace(str[rseek - 1]))
 		rseek--;
 
-	// With last '\0'
-	rstr = jstr_new(rseek + 1);
-	memcpy(rstr, str, rseek);
-	jstr_free(str);
+	jstr rstr = jstr_lcopy(str, rseek);
+	return rstr;
+
+}
+
+jstr jstr_trim(jstr str) {
+	jstr rstr;
+	jstr lcleared_str;
+
+	// Trim left
+	lcleared_str = jstr_ltrim(str);
+	// Trim right
+	rstr = jstr_rtrim(lcleared_str);
+	// Free left string
+	jstr_free(lcleared_str);
 
 	return rstr;
 }
@@ -108,7 +124,7 @@ jcode jstrs_print(const jstrs * strs, const jstr sep) {
 }
 
 jstr jstrs_index(const jstrs * strs, int index) {
-	INDEX(strs,NULL);
+	CHECK_INDEX(strs,NULL);
 	return strs->strs[index];
 }
 
@@ -131,7 +147,7 @@ jcode jstrs_append(jstrs * strs, const jstr src) {
 }
 
 jcode jstrs_set(jstrs * strs, int index, const jstr src) {
-	INDEX(strs,JERR);
+	CHECK_INDEX(strs,JERR);
 
 	jstrs_remove(strs, index);
 	strs->strs[index] = jstr_copy(src);
@@ -140,7 +156,7 @@ jcode jstrs_set(jstrs * strs, int index, const jstr src) {
 }
 
 jcode jstrs_remove(jstrs * strs, int index) {
-	INDEX(strs,JERR);
+	CHECK_INDEX(strs,JERR);
 
 	strs->strs[index] = jstr_free(strs->strs[index]);
 
