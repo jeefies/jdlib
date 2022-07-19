@@ -12,7 +12,7 @@ extern jht_node * jht_node_free(jht_node * node);
 extern jht_node * jht_exists(jht * map, unsigned key);
 
 // Use time33
-unsigned int hashTime33(jstr str) {
+static unsigned int hashTime33(jstr str) {
 	unsigned int hash = 5381;
 	while (*str)
 		hash += (hash << 5) + (*str++);
@@ -33,6 +33,29 @@ jht * jht_new_sized(int max_length) {
 	return map;
 }
 
+jany jht_delete(jht * map, jstr key) {
+	rnull(map);
+	jllist * nodes = map->nodes;
+	unsigned ikey = hash(key);
+
+	int skey = ikey % map->item_len;
+	jht_node * front, * origin = jllist_index(nodes, skey);
+	front = origin;
+	while (front != NULL && front->next != NULL && front->key != ikey && front->next->key != ikey) {
+		front = front->next;
+	}
+
+	if (front == NULL || front == origin) {
+		jany val = front ? front->val : NULL;
+		jllist_set(nodes, 0, jht_node_free(front));
+		return val;
+	}
+
+	jany val = front->next->val;
+	front->next = jht_node_free(front->next);
+	return val;
+}
+
 jcode jht_set(jht * map, jstr key, jany val) {
 	rerr(map);
 	jllist * nodes = map->nodes;
@@ -41,13 +64,11 @@ jcode jht_set(jht * map, jstr key, jany val) {
 	rerr(node);
 	// Short Key
 	int skey = node->key % map->item_len;
-	// printf("key %s with hash %u, short for %d\n", key, node->key, skey);
 	// get the front pointer of the key group
 	jht_node * to_node = jllist_index(nodes, skey);
 	// If nothing exists in this key group
 	if (to_node == NULL) {
 		jllist_set(nodes, skey, node);
-		// printf("nodes[%d] = %p, should be %p\n", skey, nodes->elems[skey], node);
 		map->len++;
 		return JOK;
 	} else {
@@ -124,113 +145,9 @@ jht_node * jht_node_new(jstr key, jany val) {
 	return node;
 }
 
+
 jht_node * jht_node_free(jht_node * node) {
-	return jfree(node);
-}
-
-// Returns the node has the key.
-// Returns NULL if the key doesn't exist
-jbst_node * jbst_node_exist(jbst_node * bt, unsigned key) {
-	rnull(bt);
-
-	if (bt->key == key)
-		return bt;
-
-	if (bt->key < key) {
-		// Current key is smaller than wanted key
-		// Find in right nodes unless there's no right node anymore
-		if (bt->right == NULL) return NULL;
-		return jbst_node_exist(bt->right, key);
-	} else {
-		if (bt->left == NULL) return NULL;
-		return jbst_node_exist(bt->left, key);
-	}
-
-	NOT_REACHED();
-	return NULL;
-}
-
-jbst * jbst_new() {
-	jbst * bt = (jbst *)jmalloc(S_BST);
-	bt->node = NULL;
-	return bt;
-}
-
-jbst_node * jbst_new_node(jany val, unsigned key) {
-	jbst_node * nbt = (jbst_node *)jmalloc(S_BSTN);
-	nbt->val = val;
-	nbt->key = key;
-	nbt->left = nbt->right = NULL;
-	
-	return nbt;
-}
-
-jbst_node * jbst_get_origin(jbst * bt, Cjstr skey) {
-	rnull(bt);
-	unsigned key = hash(skey);
-	return jbst_node_exist(bt->node, key);
-}
-
-jbst_node * jbst_keyget_origin(jbst * bt, unsigned key) {
-	rnull(bt);
-	return jbst_node_exist(bt->node, key);
-}
-
-jany jbst_get(jbst * bt, Cjstr skey) {
-	jbst_node * node = jbst_get_origin(bt, skey);
-	if (!node) return NULL;
-	return node->val;
-}
-
-jany jbst_keyget(jbst * bt, unsigned key) {
-	jbst_node * node = jbst_keyget_origin(bt, key);
-	if (!node) return NULL;
-	return node->val;
-}
-
-jbool jbst_isexists(jbst * bt, Cjstr skey) {
-	if (!jbst_get_origin(bt, skey)) return JFALSE;
-	return JTRUE;
-}
-
-jbool jbst_keyisexists(jbst * bt, unsigned key) {
-	if (!jbst_keyget_origin(bt, key)) return JFALSE;
-	return JTRUE;
-}
-
-jcode jbst_set(jbst * bt, Cjstr skey, jany val) {
-	unsigned key = hash(skey);
-	return jbst_keyset(bt, key, val);
-}
-
-jcode jbst_keyset(jbst * bt, unsigned key, jany val) {
-	rerr(bt);
-	jbst_node * btn = bt->node;
-	while (1) {
-		if (btn->key == key) {
-			btn->val = val;
-			return JOK;
-		}
-
-		if (btn->key < key) {
-			// Current Key is smaller than wanted key
-			// Search In left Nodes
-			if (btn->left == NULL) {
-				jbst_node * nbtn = jbst_new_node(val, key);
-				btn->left = nbtn;
-			}
-
-			btn = btn->left;
-		} else {
-			if (btn->right == NULL) {
-				jbst_node * nbtn = jbst_new_node(val, key);
-				btn->right = nbtn;
-			}
-
-			btn = btn->right;
-		}
-	}
-	NOT_REACHED();
+	return node ? ((uintptr_t)node->next | (uintptr_t)jfree(node)) : NULL;
 }
 
 #endif // _JDLIST_HASH_C

@@ -1,6 +1,9 @@
 #ifndef _JDLIB_C_H_
 #define _JDLIB_C_H_
 
+#include <stdio.h>
+#include <stdint.h>
+
 #define JOK 0
 #define JERR 1
 #define JFALSE 0
@@ -201,6 +204,8 @@ jany * jht_get(jht * map, Cjstr skey);
 jht_node * jht_get_origin(jht * map, Cjstr skey);
 jbool jht_isexists(jht * map, Cjstr skey);
 
+jany jht_delete(jht * map, Cjstr key);
+
 #endif // _JDLIB_HASHTABLE
 
 #ifndef _JDLIB_BINARY_SEARCH_TREE
@@ -218,8 +223,6 @@ typedef struct jbst {
 #define S_BSTN sizeof(jbst_node)
 #define S_BST sizeof(jbst)
 
-// This is just a so-called init function, but actually it returns NULL without doing anything 
-// NULL == jbst_new()
 jbst * jbst_new();
 jbst * jbst_free(jbst * bt);
 

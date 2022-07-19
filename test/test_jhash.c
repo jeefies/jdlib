@@ -25,9 +25,27 @@ void test_jht() {
 	i = (long)jht_get(ht, "Shi");
 	assert(i == 66);
 	printf("Shi should be 66: %ld\n", i);
+
+	jht_delete(ht, "Fuckyou");
+	printf("Fuckyou then should be NULL: %p\n", jht_get(ht, "Fuckyou"));
+}
+
+// J Binary Search Tree
+void test_jbst() {
+	jbst * bt = jbst_new();
+
+	jbst_set(bt, "Ha", "Ha");
+	jbst_set(bt, "Hu", "Hu");
+	jbst_set(bt, "Xi", "Xi");
+
+	printf("Index Ha is %s\n", jbst_get(bt, "Ha"));
+	printf("Index Hu is %s\n", jbst_get(bt, "Hu"));
+	printf("Index Xi is %s\n", jbst_get(bt, "Xi"));
 }
 
 int main() {
 	test_jht();
+	printf("- - - - - -- -- - - - -\n");
+	test_jbst();
 	return 0;
 }
