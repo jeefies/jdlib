@@ -41,11 +41,76 @@ void test_jbst() {
 	printf("Index Ha is %s\n", jbst_get(bt, "Ha"));
 	printf("Index Hu is %s\n", jbst_get(bt, "Hu"));
 	printf("Index Xi is %s\n", jbst_get(bt, "Xi"));
+
+	jbst_delete(bt, "Hu");
+	printf("Deleted index should be nil: %p\n", jbst_get(bt, "Hu"));
+}
+
+void printbt(jbst_node * node) {
+	printf("%s\n", node->val);
+}
+
+void test_jbst2() {
+	jbst * bt= jbst_new();
+
+	jbst_keyset(bt, 10, "ten");
+	jbst_keyset(bt, 5, "five");
+	jbst_keyset(bt, 3, "three");
+	jbst_keyset(bt, 7, "seven");
+	jbst_keyset(bt, 1, "one");
+	jbst_keyset(bt, 15, "ten-five");
+	jbst_keyset(bt, 12, "ten-two");
+	jbst_keyset(bt, 17, "ten-seven");
+	jbst_keyset(bt, 19, "ten-nine");
+	jbst_keyset(bt, 14, "ten-four");
+	jbst_keyset(bt, 13, "ten-three");
+	jbst_preorder(bt, printbt);
+	printf("... Preorder\n\n");
+	//       10
+	//      /  \
+	//     5   15
+	//    / \  / \
+	//   3  7 12 17
+	//  /      \   \
+	// 1        14  19
+	//          /
+	//         13
+
+	jbst_keydelete(bt, 15);
+	//       10
+	//      /  \
+	//     5   14
+	//    / \  / \
+	//   3  7 12 17
+	//  /      \   \
+	// 1        13  19
+	jbst_node * root = bt->node;
+	assert(root->right->key == 14);
+	assert(root->right->right->key == 17);
+	assert(root->right->left->key == 12);
+	assert(root->right->left->right->key == 13);
+	jbst_inorder(bt, printbt);
+	printf("... Inorder\n\n");
+
+	//       10
+	//      /  \
+	//     5   14
+	//    /    / \
+	//   3    12 17
+	//  /      \   \
+	// 1        13  19
+	jbst_keydelete(bt, 7);
+	assert(root->left->right == NULL);
+	jbst_postorder(bt, printbt);
+	printf("... Postorder\n\n");
+
+	printf("Test bst OK\n");
 }
 
 int main() {
 	test_jht();
 	printf("- - - - - -- -- - - - -\n");
 	test_jbst();
+	test_jbst2();
 	return 0;
 }

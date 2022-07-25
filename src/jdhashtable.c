@@ -147,7 +147,8 @@ jht_node * jht_node_new(jstr key, jany val) {
 
 
 jht_node * jht_node_free(jht_node * node) {
-	return node ? ((uintptr_t)node->next | (uintptr_t)jfree(node)) : NULL;
+	// Return node->next after free if node is not NULL else NULL
+	return node ? (jht_node *)((uintptr_t)node->next | (uintptr_t)jfree(node)) : NULL;
 }
 
 #endif // _JDLIST_HASH_C

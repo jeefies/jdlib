@@ -235,7 +235,10 @@ jbst_node * jbst_keyget_origin(jbst * bt, unsigned key);
 jbool jbst_isexists(jbst * bt, Cjstr skey);
 jbool jbst_keyisexists(jbst * bt, unsigned key);
 
-typedef jany(*JBT_CALL)(jany,jstr);
+jany jbst_keydelete(jbst * bt, unsigned key);
+jany jbst_delete(jbst * bt, Cjstr skey);
+
+typedef void(*JBT_CALL)(jbst_node * node);
 jcode jbst_preorder(jbst * bt, JBT_CALL call);
 jcode jbst_postorder(jbst * bt, JBT_CALL call);
 jcode jbst_inorder(jbst * bt, JBT_CALL call);
