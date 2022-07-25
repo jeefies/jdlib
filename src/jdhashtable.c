@@ -1,5 +1,5 @@
-#ifndef _JDLIST_HASH_C
-#define _JDLIST_HASH_C
+#ifndef _JDLIB_HASH_C_
+#define _JDLIB_HASH_C_
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -151,4 +151,4 @@ jht_node * jht_node_free(jht_node * node) {
 	return node ? (jht_node *)((uintptr_t)node->next | (uintptr_t)jfree(node)) : NULL;
 }
 
-#endif // _JDLIST_HASH_C
+#endif // _JDLIB_HASH_C_

@@ -1,14 +1,13 @@
-#include <stdlib.h>
-
 #ifndef _JDLIB_BINARY_SEARCH_TREE_C_
 #define _JDLIB_BINARY_SEARCH_TREE_C_
 
+#include <stdlib.h>
 #include <jdlib.h>
 
 #define hash hashTime33
 
 // Use time33
-unsigned int hashTime33(jstr str) {
+static unsigned int hashTime33(jstr str) {
 	if (str == NULL) return 0;
 
 	unsigned int hash = 5381;

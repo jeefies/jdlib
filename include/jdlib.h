@@ -178,8 +178,8 @@ jcode jdlist_foreach_reverse(jdlist * l, jany(*)(jany,int));
 
 #endif // _JDLIB_LIST_
 
-#ifndef _JDLIB_HASHTABLE
-#define _JDLIB_HASHTABLE
+#ifndef _JDLIB_HASHTABLE_
+#define _JDLIB_HASHTABLE_
 
 #define JHT_DEFAULT 33
 typedef struct jht_node {
@@ -206,10 +206,10 @@ jbool jht_isexists(jht * map, Cjstr skey);
 
 jany jht_delete(jht * map, Cjstr key);
 
-#endif // _JDLIB_HASHTABLE
+#endif // _JDLIB_HASHTABLE_
 
-#ifndef _JDLIB_BINARY_SEARCH_TREE
-#define _JDLIB_BINARY_SEARCH_TREE
+#ifndef _JDLIB_BINARY_SEARCH_TREE_
+#define _JDLIB_BINARY_SEARCH_TREE_
 
 typedef struct jbst_node {
 	jany val;
@@ -243,7 +243,26 @@ jcode jbst_preorder(jbst * bt, JBT_CALL call);
 jcode jbst_postorder(jbst * bt, JBT_CALL call);
 jcode jbst_inorder(jbst * bt, JBT_CALL call);
 
-#endif // _JDLIB_BINARY_SEARCH_TREE
+#endif // _JDLIB_BINARY_SEARCH_TREE_
+
+#ifndef _JDLIB_STACK_
+#define _JDLIB_STACK_
+typedef struct jstack_node {
+	jany val;
+	struct jstack_node * next;
+} jstack_node;
+
+typedef struct jstack {
+	jstack_node * front;
+} jstack;
+
+jstack * jstack_new();
+jcode jstack_push(jstack * stk, jany val);
+jany jstack_pop(jstack * stk);
+jcode jstack_foreach(jstack * stk, jany(*)(jany val));
+
+
+#endif // _JDLIB_STACK_
 
 // Generic Definations
 #define ABS(x) x<0?-x:x
