@@ -18,6 +18,7 @@ void test_jstack() {
 
 	printf("%s\n", jstack_pop(stk));
 	printf("%s\n", jstack_pop(stk));
+	printf("Test Jstack OK\n");
 }
 
 int main() {

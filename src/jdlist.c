@@ -43,10 +43,22 @@ jcode jllist_append_empty(jllist * l, jany elem) {
 	return jllist_append(l, elem);
 }
 
-// Append the element at end of the List (alloc a new place)
+// Append the element at the last avaiable space.
 jcode jllist_append(jllist * l, jany elem) {
-	l->elems = (jany *)jrealloc(l->elems, S_ANY * (++l->cap));
-	l->len = l->cap;
+	rerr(l);
+	// Find last unavailable space
+	int i = l->cap - 1;
+	for (; i >= 0; i--) {
+		if (l->elems[i] != NULL) break;
+	}
+
+	if (i == l->cap - 1) {
+		l->elems = (jany *)jrealloc(l->elems, S_ANY * (++l->cap));
+		l->elems[++i] = elem;
+	} else {
+		l->elems[i + 1] = elem;
+	}
+	l->len++;
 	return JOK;
 }
 
@@ -63,10 +75,12 @@ jany jllist_index(jllist * l, int index) {
 	return l->elems[index];
 }
 
-jcode jllist_remove(jllist * l, int index) {
-	CHECK_INDEXC(l,JERR);
+jany jllist_remove(jllist * l, int index) {
+	CHECK_INDEXC(l,NULL);
+	jany val = l->elems[index];
 	l->elems[index] = NULL;
 	l->len--;
+	return val;
 }
 
 jllist * jllist_free(jllist * l) {

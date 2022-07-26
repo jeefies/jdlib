@@ -1,27 +1,25 @@
 #include <stdio.h>
+#include <string.h>
+#include <assert.h>
 
 #include <jdlib.h>
 
 void test_strs() {
 	// jstr is another name of "char *"
 	jstr str = "Here's a simple string";
+	
 	// jstrs include a list of strs and a length number
 	jstrs * str_l = jstrs_new_empty();
-
-	// it should be equal to jstrs_len(str_l);
-	printf("empty length %d\n", str_l->len);
+	assert(str_l->len == 0);
 
 	// This operations would copy the string and you can free origin anytime you want.
 	jstrs_append(str_l, str);
-
-	printf("one added length %d\n", str_l->len);
-
+	assert(str_l->len == 1);
+	
 	// Second argument is the `sep` between each str
 	jstrs_print(str_l, "\n");
 
-	printf("\nCreate one with 2 place\n");
 	jstrs * strs2 = jstrs_new(2);
-
 	// test set and index method
 	jstrs_set(strs2, 1, "Fuck you!");
 	jstrs_set(strs2, 0, jstrs_index(str_l, 0));
@@ -56,10 +54,8 @@ void test_str() {
 	// jstr str = jstr_copy("\tJ str here    ");
 	jstr str = jstr_from("\tJ str here    ");
 
-	printf("old str: \"%s\"\n", str);
-
 	jstr trimed = jstr_trim(str);
-	printf("trimed: \"%s\"\n", trimed);
+	assert(strcmp(trimed, "J str here") == 0);
 
 	jstr_free(str);
 	jstr_free(trimed);

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <jdlib.h>
 #include <assert.h>
+#include <string.h>
 
 // J HashTable
 void test_jht() {
@@ -15,19 +16,17 @@ void test_jht() {
 	long i;
 	i = (long)jht_get(ht, "Fuckyou");
 	assert(i == 25);
-	printf("Fuckyou should be 25: %ld\n", i);
 	i = (long)jht_get(ht, "HEI");
 	assert(i == 7);
-	printf("HEI should be 7: %ld\n", i);
 	i = (long)jht_get(ht, "Hei");
 	assert(i == 6);
-	printf("Hei should be 6: %ld\n", i);
 	i = (long)jht_get(ht, "Shi");
 	assert(i == 66);
-	printf("Shi should be 66: %ld\n", i);
 
 	jht_delete(ht, "Fuckyou");
-	printf("Fuckyou then should be NULL: %p\n", jht_get(ht, "Fuckyou"));
+	assert(jht_get(ht, "Fuckyou") == NULL);
+
+	printf("Test JHT ok\n");
 }
 
 // J Binary Search Tree
@@ -38,12 +37,14 @@ void test_jbst() {
 	jbst_set(bt, "Hu", "Hu");
 	jbst_set(bt, "Xi", "Xi");
 
-	printf("Index Ha is %s\n", jbst_get(bt, "Ha"));
-	printf("Index Hu is %s\n", jbst_get(bt, "Hu"));
-	printf("Index Xi is %s\n", jbst_get(bt, "Xi"));
+	assert(strcmp(jbst_get(bt, "Ha"), "Ha") == 0);
+	assert(strcmp(jbst_get(bt, "Hu"), "Hu") == 0);
+	assert(strcmp(jbst_get(bt, "Xi"), "Xi") == 0);
 
 	jbst_delete(bt, "Hu");
-	printf("Deleted index should be nil: %p\n", jbst_get(bt, "Hu"));
+	assert(jbst_get(bt, "Hu") == NULL);
+
+	printf("Test JBST 1 OK");
 }
 
 void printbt(jbst_node * node) {
@@ -104,12 +105,11 @@ void test_jbst2() {
 	jbst_postorder(bt, printbt);
 	printf("... Postorder\n\n");
 
-	printf("Test bst OK\n");
+	printf("Test JBST 2 OK\n");
 }
 
 int main() {
 	test_jht();
-	printf("- - - - - -- -- - - - -\n");
 	test_jbst();
 	test_jbst2();
 	return 0;

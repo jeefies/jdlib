@@ -155,12 +155,13 @@ jcode jstrs_set(jstrs * strs, int index, const jstr src) {
 	return JOK;
 }
 
-jcode jstrs_remove(jstrs * strs, int index) {
-	CHECK_INDEX(strs,JERR);
+jstr jstrs_remove(jstrs * strs, int index) {
+	CHECK_INDEX(strs,NULL);
 
-	strs->strs[index] = jstr_free(strs->strs[index]);
+	jstr str = strs->strs[index];
+	strs->strs[index] = NULL;
 
-	return JOK;
+	return str;
 }
 
 #endif // _JDLIB_STR_

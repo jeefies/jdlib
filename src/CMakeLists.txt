@@ -12,6 +12,7 @@ set (SRC
 	${SRCD}/jdhashtable.c
 	${SRCD}/jdbinary_search_tree.c
 	${SRCD}/jdstack.c
+	${SRCD}/jdqueue.c
 )
 
 set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)

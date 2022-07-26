@@ -11,6 +11,8 @@
 typedef char jbool;
 typedef char jcode;
 #define Cjstr const jstr
+typedef void* jany;
+#define S_ANY sizeof(jany)
 
 #ifndef _JDLIB_STRS_
 #define _JDLIB_STRS_
@@ -59,7 +61,7 @@ int jstrs_find (const jstrs * strs, const jstr dst);
 // Write ops
 // It just spare a NULL space if src is NULL.
 jcode jstrs_append(jstrs * strs, const jstr src);
-jcode jstrs_remove(jstrs * strs, int index);
+jstr jstrs_remove(jstrs * strs, int index);
 // It works like jstrs_remove if src is NULL
 jcode jstrs_set(jstrs * strs, int index, const jstr src);
 #endif // _JDLIB_STRS_
@@ -67,12 +69,10 @@ jcode jstrs_set(jstrs * strs, int index, const jstr src);
 #ifndef _JDLIB_LIST_
 #define _JDLIB_LIST_
 
-typedef void* jany;
-#define S_ANY sizeof(jany)
 // Linear List
 typedef struct jllist { 
 	jany * elems;
-	int len;
+	int len; // The number of the values in
 	int cap; // capacity
 } jllist;
 #define S_LL sizeof(jllist)
@@ -86,7 +86,7 @@ jllist * jllist_free(jllist * l);
 jcode jllist_append(jllist * l, jany elem);
 jcode jllist_append_empty(jllist * l, jany elem);
 jcode jllist_set(jllist * l, int index, jany elem);
-jcode jllist_remove(jllist * l, int index);
+jany jllist_remove(jllist * l, int index);
 // Read Method
 jany jllist_index(jllist * l, int index);
 
@@ -260,9 +260,25 @@ jstack * jstack_new();
 jcode jstack_push(jstack * stk, jany val);
 jany jstack_pop(jstack * stk);
 jcode jstack_foreach(jstack * stk, jany(*)(jany val));
-
-
 #endif // _JDLIB_STACK_
+
+#ifndef _JDLIB_QUEUE_
+#define _JDLIB_QUEUE_
+typedef struct jqueue_node {
+	jany val;
+	struct jqueue_node * next;
+} jqueue_node;
+
+typedef struct jqueue {
+	jqueue_node * front;
+	jqueue_node * back;
+} jqueue;
+
+jqueue * jqueue_new();
+jcode jqueue_push(jqueue * jq, jany val);
+jany jqueue_pop(jqueue * jq);
+
+#endif // _JDLIB_QUEUE_
 
 // Generic Definations
 #define ABS(x) x<0?-x:x
