@@ -157,3 +157,6 @@ Testing
 *.vim
 *.swp
 *.swo
+
+doc/html
+doc/latex

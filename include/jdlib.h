@@ -19,8 +19,8 @@ typedef void* jany;
 typedef char jchar;
 typedef jchar* jstr;
 typedef struct jstrs {
+	int len, cap;
 	jstr * strs;
-	int len;
 } jstrs;
 
 #define S_CH sizeof(jchar)
@@ -45,10 +45,12 @@ jstrs * jstr_split(jstr str, const jstr sep);
 // Create a jstrs instance
 jstrs * jstrs_new(int size);
 jstrs * jstrs_new_empty();
-jstrs * jstrs_new_from(const jstrs * strs);
+jstrs * jstrs_copy_from(const jstrs * strs);
+jstrs * jstrs_deepcopy_from(const jstrs * strs);
 
 // Cleanup
 jstrs * jstrs_free(jstrs * strs);
+jstrs * jstrs_free_only(jstrs * strs);
 
 // Read ops
 // Return NULL if index is out of range
@@ -60,7 +62,7 @@ int jstrs_find (const jstrs * strs, const jstr dst);
 
 // Write ops
 // It just spare a NULL space if src is NULL.
-jcode jstrs_append(jstrs * strs, const jstr src);
+int jstrs_append(jstrs * strs, const jstr src);
 jstr jstrs_remove(jstrs * strs, int index);
 // It works like jstrs_remove if src is NULL
 jcode jstrs_set(jstrs * strs, int index, const jstr src);
@@ -280,6 +282,16 @@ jany jqueue_pop(jqueue * jq);
 
 #endif // _JDLIB_QUEUE_
 
+#ifndef _JDLIB_BIT_INDEX_TREE_
+#define _JDLIB_BIT_INDEX_TREE_
+
+typedef struct jbit {
+	int maxint;
+	int storage[];
+} jbit;
+
+#endif // _JDLIB_BIT_INDEX_TREE_
+
 // Generic Definations
 #define ABS(x) x<0?-x:x
 #define MAX(x,y) x<y?y:x
@@ -298,5 +310,7 @@ jany jqueue_pop(jqueue * jq);
 jany jfree(jany p);
 jany jmalloc(int size);
 jany jrealloc(jany p, int size);
+//  Return total bytes that is using
+int jspace_usage();
 
 #endif // _JDLIB_C_H_
